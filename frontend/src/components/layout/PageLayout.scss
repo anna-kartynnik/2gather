@@ -1,0 +1,28 @@
+@import './../../colors.scss';
+
+.page-layout {
+    margin-top: 2em;
+    margin-bottom: 1em;
+
+	.header {
+        border-bottom: 3px solid $secondary;
+
+		img {
+			width: 32px;
+
+			&.logo {
+				padding-bottom: 7px;
+			}
+		}
+		h1 {
+			font-family: Sanchez;
+			color: $primary;
+		}
+	}
+
+	.page-content {
+		margin-top: 1em;
+		margin-bottom: 1em;
+		/*height: calc(100vh - 100px - 2em);*/
+	}
+}

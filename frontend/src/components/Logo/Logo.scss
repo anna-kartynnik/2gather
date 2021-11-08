@@ -1,0 +1,14 @@
+@import './../../colors.scss';
+
+.btn-logo {
+	text-decoration: none !important;
+
+	&:focus {
+		box-shadow: none !important;
+	}
+
+	h1 {
+		font-family: Sanchez;
+		color: $primary;
+	}
+}

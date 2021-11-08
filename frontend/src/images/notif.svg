@@ -1,0 +1,12 @@
+
+<svg width="28px" height="30px" viewBox="0 0 28 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+        <rect x="870" y="28" width="30" height="30" id="rect-4llw1v4e76-1"></rect>
+    </defs>
+    <g id="Meetings---Agenda" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="notification" transform="translate(-871.000000, -28.000000)">
+            <image x="870" y="28" width="30" height="30" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABGdBTUEAALGOfPtRkwAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAGKADAAQAAAABAAAAGAAAAADiNXWtAAABg0lEQVRIDbWUQUrDQBSGJwpFKIJSsPYEVRfuvECvULp0X+hFvELX3XbXY7hzo0cQRRQVcaHE74+ZNCQzmUnQBx8zeXnv/zOTZEyapiYGY8wMrnNmMT2qiRUfIPwBdGRoPogxCRogNIJ1LmwNNCo3Cpk0GiAwh3coC5fnujdvMvEa0LhoEC6baL7wmTgNaBjDVwsD1Y5dJj6DVQtxu5qVyyBRshpJkjyTO6jmA9cvaB3WaqquFAzBPlXbcVjV26k5GnPiyMWmar0ug7NYNUddrddlcOFojE3Ve8t7hkofXqHt3tt69fbLmtUVXFKwD11DvdLYhnUjo6/nCezTdB2lUXxNxY9G0nWgdTVZFw+uCTGFrmK+vmmmnRts/sFgI237kk+1jD+OX818BRPEm8593zb48tKaSLs47Djgjkieg5yFfnuNx9AU99y8hbt81PwG8QfGrYEuXIHxLvm9Eir7tCD0rYQ3tIwQNC/hDR5zNF+G+nQ/KJ4VGdND8Aq0DULzXozBD5zfzXerAiZiAAAAAElFTkSuQmCC"></image>
+            <use fill="#728096" fill-rule="evenodd" xlink:href="#rect-4llw1v4e76-1"></use>
+        </g>
+    </g>
+</svg>

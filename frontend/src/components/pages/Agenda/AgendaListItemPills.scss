@@ -1,0 +1,10 @@
+@import './../../../colors.scss';
+
+.pills {
+  .pill.success {
+    border: 1px solid $success;
+  }
+  .pill.warning {
+    border: 1px solid $warning;
+  }
+}
