@@ -1,7 +1,6 @@
 //import './PageLayout.scss';
 
 import Nav from 'react-bootstrap/Nav';
-//import { LinkContainer } from 'react-router-bootstrap';
 import { Link } from 'react-router-dom';
 
 
@@ -21,8 +20,6 @@ function PageTabs(props) {
       </Nav.Item>
       <Nav.Item>
         <Nav.Link as={Link} to='/pending' eventKey='pending'>Pending</Nav.Link>
-{/*          <Nav.Link active={'pending' === activeTab} className={'pending' === activeTab ? 'active' : ''}>Pending</Nav.Link>
-        </LinkContainer>*/}
       </Nav.Item>
     </Nav>
   );

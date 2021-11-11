@@ -7,7 +7,10 @@ import Badge from 'react-bootstrap/Badge';
 import { Link } from 'react-router-dom';
 
 import AgendaListItemPills from './AgendaListItemPills';
-import AgendaListItemActions from './AgendaListItemActions';
+import {
+  AgendaListItemCreatorActions,
+  AgendaListItemParticipantActions
+} from './AgendaListItemActions';
 
 
 function AgendaListItem(props) {
@@ -33,9 +36,14 @@ function AgendaListItem(props) {
           pills={props.item.pills}
         />
       </Col>
-      <Col sm='auto'>
+      <Col sm={2}>
         {/* [TODO] if current user === creator */}
-        <AgendaListItemActions />
+        { props.item.is_creator && <AgendaListItemCreatorActions /> }
+        { !props.item.is_creator &&
+          <AgendaListItemParticipantActions
+            item={props.item}
+          />
+        }
       </Col>
     </Row>
   );

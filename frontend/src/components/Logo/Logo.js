@@ -1,6 +1,6 @@
 import './Logo.scss';
 
-import { LinkContainer } from 'react-router-bootstrap';
+import { Link } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import Stack from 'react-bootstrap/Stack';
 
@@ -8,7 +8,7 @@ import logo from './../../images/logo192.png';
 
 function Logo() {
   return (
-    <LinkContainer to='/'>
+    <Link to='/'>
       <Button variant='link' className='btn-logo'>
         <Stack direction='horizontal'>
           <div>
@@ -19,7 +19,7 @@ function Logo() {
           </div>
         </Stack>
       </Button>
-    </LinkContainer>
+    </Link>
   );
 }
 

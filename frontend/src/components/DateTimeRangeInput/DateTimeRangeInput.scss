@@ -1,0 +1,21 @@
+@import './../../colors.scss';
+
+.date-time-range-input {
+  width: 100%;
+  font-size: 1rem !important;
+  border-radius: 0.25rem !important;
+  padding: 0.375rem 0.75rem !important;
+
+  &.ant-picker svg[data-icon='swap-right'] {
+    vertical-align: baseline;
+  }
+
+  .ant-picker-input > input {
+    font-size: 1rem;
+    line-height: 1.5;
+
+    &::placeholder {
+      color: $secondary;
+    }
+  }
+}

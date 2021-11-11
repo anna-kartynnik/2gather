@@ -9,7 +9,7 @@ import Agenda from './components/pages/Agenda/Agenda';
 import Pending from './components/pages/Pending/Pending';
 import MeetingDetails from './components/pages/MeetingDetails/MeetingDetails';
 
-import './App.css';
+import './App.less';
 
 function App() {
   return (
