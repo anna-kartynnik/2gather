@@ -31,3 +31,8 @@ body {
   font-family: 'Merriweather-Regular';
   src: local('Merriweather-Regular'), url(./fonts/Merriweather/Merriweather-Regular.ttf) format('ttf');
 }
+
+@font-face {
+  font-family: 'Merriweather-Light';
+  src: local('Merriweather-Light'), url(./fonts/Merriweather/Merriweather-Light.ttf) format('ttf');
+}

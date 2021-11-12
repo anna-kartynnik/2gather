@@ -1,0 +1,12 @@
+@import './../../../colors.scss';
+
+.meeting-details-page {
+  .label {
+    font-family: Merriweather-Light;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: $text;
+    margin-bottom: 0.5rem;
+    margin-top: 0.5rem;
+  }
+}

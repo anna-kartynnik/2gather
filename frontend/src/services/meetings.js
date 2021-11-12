@@ -1,8 +1,13 @@
 // [TODO] add backend integration
 
+import moment from 'moment';
+
 const LIST_ITEMS = [{
   id: 'id1',
-  title: 'Stand-up meeting',
+  name: 'Stand-up meeting',
+  description: 'Description 1',
+  participants: [],
+  time: moment().format('YYYY-MM-DD[T]HH:mm'),
   note: 'Starts in 15 min',
   pills: [{
     text: 'quick: 15 min',
@@ -13,7 +18,9 @@ const LIST_ITEMS = [{
   is_creator: true
 }, {
   id: 'id2',
-  title: 'Discussion Group',
+  name: 'Discussion Group',
+  description: 'Description 2',
+  participants: [],
   note: 'Proposed time: 4pm',
   pills: [{
     text: 'long: 1 hour',
@@ -25,7 +32,9 @@ const LIST_ITEMS = [{
   proposed_option_accepted: true
 }, {
   id: 'id2',
-  title: 'Discussion Group',
+  name: 'Discussion Group',
+  description: 'Description 2',
+  participants: [],
   note: 'Proposed time: 5pm',
   pills: [{
     text: 'long: 1 hour',
@@ -69,6 +78,15 @@ export function getParticipants() {
       }])
     }, 1000);
   });
+}
+
+export function getMeetingById(id) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const items = LIST_ITEMS.filter((item) => item.id === id);
+      return resolve(items.length > 0 ? items[0] : null);
+    }, 1000);
+  });  
 }
 
 

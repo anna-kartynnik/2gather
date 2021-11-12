@@ -20,7 +20,7 @@ function AgendaListItem(props) {
       <Col className='title-container' sm={6}>
         <Link to={`/meetings/${props.item.id}`}>
           <div className='title'>
-            { props.item.title }
+            { props.item.name }
             &nbsp;
             { props.item.proposed_option_number &&
               <Badge pill bg='warning' className='option-pill'>
