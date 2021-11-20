@@ -9,7 +9,7 @@ import Stack from 'react-bootstrap/Stack';
 //import Spinner from './../../Spinner/Spinner';
 import AgendaListItem from './AgendaListItem';
 
-//import { getAgendaList, getConfirmedAgendaList } from './../../../services/meetings';
+//import { getAgendaList, getConfirmedAgendaList } from './../../../services/aws/meetings';
 
 
 function AgendaList(props) {

@@ -1,0 +1,4 @@
+https://docs.aws.amazon.com/cognito/latest/developerguide/google.html
+https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-create-cognito-user-pool.html
+https://aws.amazon.com/blogs/compute/secure-api-access-with-amazon-cognito-federated-identities-amazon-cognito-user-pools-and-amazon-api-gateway/
+https://docs.aws.amazon.com/cognito/latest/developerguide/google.html

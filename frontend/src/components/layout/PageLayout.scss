@@ -4,25 +4,30 @@
     margin-top: 2em;
     margin-bottom: 1em;
 
-	.header {
+  .header {
         border-bottom: 3px solid $secondary;
 
-		img {
-			width: 32px;
+    img {
+      width: 32px;
 
-			&.logo {
-				padding-bottom: 7px;
-			}
-		}
-		h1 {
-			font-family: Sanchez;
-			color: $primary;
-		}
-	}
+      &.logo {
+        padding-bottom: 7px;
+      }
+    }
+    h1 {
+      font-family: Sanchez;
+      color: $primary;
+    }
+    .user-avatar img {
+      border-radius: 50%;
+      border: 2px solid $secondary;
+      width: 38px;
+    }
+  }
 
-	.page-content {
-		margin-top: 1em;
-		margin-bottom: 1em;
-		/*height: calc(100vh - 100px - 2em);*/
-	}
+  .page-content {
+    margin-top: 1em;
+    margin-bottom: 1em;
+    /*height: calc(100vh - 100px - 2em);*/
+  }
 }

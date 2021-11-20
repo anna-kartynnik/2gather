@@ -4,7 +4,7 @@ import './ParticipantAutoComplete.scss';
 
 import { Select } from 'antd';
 
-import { getParticipants } from './../../services/meetings';
+import { getParticipants } from './../../services/aws/meetings';
 
 const { Option } = Select;
 

@@ -17,7 +17,7 @@ function AgendaListItem(props) {
 
   return (
     <Row className={'agenda-list-item ' + (props.item.is_confirmed ? '' : 'not-confirmed')}>
-      <Col className='title-container' sm={6}>
+      <Col className='title-container' sm={5}>
         <Link to={`/meetings/${props.item.id}`}>
           <div className='title'>
             { props.item.name }
@@ -36,7 +36,7 @@ function AgendaListItem(props) {
           pills={props.item.pills}
         />
       </Col>
-      <Col sm={2}>
+      <Col sm={3}>
         {/* [TODO] if current user === creator */}
         { props.item.is_creator && <AgendaListItemCreatorActions /> }
         { !props.item.is_creator &&

@@ -1,8 +1,10 @@
-import React, { Component } from 'react';
+import React from 'react';
 
 import './DateTimeRangeInput.scss';
 
 import { DatePicker } from 'antd';
+
+import moment from 'moment';
 
 const { RangePicker } = DatePicker;
 
@@ -21,7 +23,12 @@ function DateTimeRangeInput(props) {
   return (
     <RangePicker
       className='date-time-range-input'
-      showTime={{ format: 'HH:mm' }}
+      //showTime={{ format: 'HH:mm' }}
+      showTime={{
+        defaultValue: [
+          moment('08:00', 'HH:mm'),
+          moment('18:00', 'HH:mm')],
+      }}
       format='YYYY-MM-DD HH:mm'
       onChange={onChange}
       onOk={onOk}

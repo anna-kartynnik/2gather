@@ -1,0 +1,80 @@
+@import './../../../colors.scss';
+
+.login-page {
+  height: 100vh;
+
+  .left-top-polygon {
+    position: absolute;
+    left: 0;
+    top: 0;
+    float: left;
+    shape-outside: polygon(0 0, 65vw 0, 0 35vh);
+    clip-path: polygon(0 0, 65vw 0, 0 35vh);
+    height: 35vh;
+    width: 65vw;
+    /*background: linear-gradient(to top right, $primary, $secondary);*/
+    background-color: $primary;
+    opacity: 50%;
+  }
+
+  .right-top-polygon {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    float: right;
+    shape-outside: polygon(45vw 0, 100vw 0, 100vw 45vh);
+    clip-path: polygon(45vw 0, 100vw 0, 100vw 45vh);
+    height: 45vh;
+    background-color: $secondary;
+    opacity: 50%;
+  }
+
+  .left-bottom-polygon {
+    float: left;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    shape-outside: polygon(0 25vh, 70vw 100vh, 0 100vh);
+    clip-path: polygon(0 25vh, 70vw 100vh, 0 100vh);
+    width: 70vw;
+    background-color: $secondary;
+    opacity: 50%;
+  }
+
+  .right-bottom-polygon {
+    float: right;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    shape-outside: polygon(50vw 100vh, 100vw 100vh, 100vw 30vh);
+    clip-path: polygon(50vw 100vh, 100vw 100vh, 100vw 30vh);
+    width: 100vw;
+    background-color: $primary;
+    opacity: 50%;
+  }
+
+  img.logo {
+    width: 5rem;
+  }
+
+  .logo-text {
+    font-size: 4rem;
+    color: $primary;
+    font-family: Sanchez;
+    width: auto;
+  }
+
+  .login-page-container {
+    padding-top: 20vh;
+  }
+
+  .login-button > button {
+    margin: 2rem 0;
+    font-family: Sanchez;
+    color: #ffffff;
+    width: auto;
+  }
+}

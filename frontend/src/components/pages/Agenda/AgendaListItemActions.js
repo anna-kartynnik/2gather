@@ -15,13 +15,13 @@ export function AgendaListItemCreatorActions(props) {
 
   return (
     <Stack direction='horizontal' className='agenda-list-item-actions'>
-      <Button variant='link' title='Edit'>
+      <Button variant='link' title='Edit' className="ms-auto">
         <img src={editIcon} alt='Edit' />
       </Button>
       <Button variant='link' title='Reschedule'>
         <img src={rescheduleIcon} alt='Reschedule' />
       </Button>
-      <Button variant='link' title='Delete' className='ms-auto'>
+      <Button variant='link' title='Delete'>
         <img src={deleteIcon} alt='Delete' />
       </Button>
     </Stack>

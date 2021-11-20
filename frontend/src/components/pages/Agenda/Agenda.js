@@ -9,7 +9,7 @@ import PageActions from './../../PageActions/PageActions';
 import PageTabs from './../../PageTabs/PageTabs';
 import CreateMeetingDialog from './../../CreateMeetingDialog/CreateMeetingDialog';
 
-import { getAgendaList, getConfirmedAgendaList } from './../../../services/meetings';
+import { getAgendaList, getConfirmedAgendaList } from './../../../services/aws/meetings';
 
 
 function Agenda(props) {

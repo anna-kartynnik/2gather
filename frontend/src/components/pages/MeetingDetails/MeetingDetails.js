@@ -6,7 +6,9 @@ import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import PageActions from './../../PageActions/PageActions';
 
-import { getMeetingById } from './../../../services/meetings';
+import playIcon from './../../../images/play.svg';
+
+import { getMeetingById } from './../../../services/aws/meetings';
 
 
 function MeetingDetails(props) {
@@ -33,6 +35,7 @@ function MeetingDetails(props) {
         buttonComponent={
           <Button variant='primary' size='lg'
             onClick={handlePresentationModeClick}>
+            <img src={playIcon} alt='play' />
             Presentation&nbsp;mode
           </Button>
         }
