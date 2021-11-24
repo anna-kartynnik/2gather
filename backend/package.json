@@ -1,0 +1,16 @@
+{
+  "name": "2gather-backend",
+  "version": "0.0.1",
+  "description": "TODO",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Hanna Kartynnik (hk3129@columbia.edu)",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "pg": "^8.7.1",
+    "postgres-migrations": "^5.3.0"
+  }
+}

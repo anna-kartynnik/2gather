@@ -1,28 +1,32 @@
-const db_helper = require('./db_helper.js');
+// common.js should be put near index.js when deploying.
+const common = require('./common.js');
 
-
-function getResponse(statusCode, bodyJSON) {
-  return {
-    statusCode: statusCode,
-    body: bodyJSON,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-    },    
-  };
-}
+const CALENDARS_TABLE = 'user_calendars';
 
 exports.handler = async (event) => {
   try {
     console.log(event);
-    const reqBody = JSON.parse(event.body);
-    
-    await db_helper.saveUserCalendar(reqBody.user_email, reqBody.calendar_id);
-    console.log('saved');
-    return getResponse(201, JSON.stringify('Created'));
+    const requestBody = JSON.parse(event.body);
+
+    const result = await common.makeQuery(new common.Query(
+      `INSERT INTO ${CALENDARS_TABLE} (user_id, calendar_id) VALUES ($1, $2);`,
+      [requestBody.user_id, requestBody.calendar_id]
+    ));
+    console.log(JSON.stringify(result));
+    return common.formResponse(201, {});
   } catch (err) {
-    console.log(err?.message ?? err);
-    return getResponse(400, JSON.stringify({
-      message: err?.message ?? 'An error has occurred.'
+    console.log('Error: ' + err);
+    return common.formResponse(500, JSON.stringify({
+      message: err && err.message ? err.message : 'An error has occurred.'
     }));
   }
 };
+
+
+// local testing
+// exports.handler({
+//   body: JSON.stringify({
+//     user_id: 'f309e4e7-8d75-4ae8-9f0e-8e9d259d1da4',
+//     calendar_id: 'test calendar 2'
+//   })
+// });
