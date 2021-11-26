@@ -1,7 +1,7 @@
 
 function loadConfig(path) {
   require('dotenv').config({
-  	path: path
+    path: path
   });
 }
 

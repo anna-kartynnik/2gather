@@ -1,0 +1,7 @@
+client_secret.apps.googleusercontent.com.json
+gather-331905.json
+
+backend/.env.development
+backend/.env.aws
+backend/node_modules
+**/.DS_Store
