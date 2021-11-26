@@ -40,9 +40,12 @@ async function makeQueries(client, queries) {
 }
 
 async function makeQuery(query) {
+  console.log('DEBUG: Creating client...');
   const client = await pool.connect();
+  console.log('DEBUG: Client created');
   let res = null;
   const shouldBeCommitted = query.isCommittable;
+  console.log(`DEBUG: committable ${shouldBeCommitted}`)
   try {
     if (shouldBeCommitted) {
       const results = await makeQueries(client, [query]);

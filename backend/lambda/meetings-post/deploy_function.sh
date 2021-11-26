@@ -9,6 +9,13 @@ files="index.js ../common.js ../meetings.js"
 chmod -R 755 ${files}
 zip -r "${zip_file}"  ../../node_modules  $files
 
+lambda_dir=$PWD
+zip "${zip_file}" index.js
+cd ..
+zip "${lambda_dir}/${zip_file}" common.js meetings.js
+cd ..
+zip -r "${lambda_dir}/${zip_file}" node_modules
+
 # [TODO] get env from config or .env.development?
 # Loop through arguments and process them
 for arg in "$@"
@@ -19,7 +26,7 @@ do
         aws lambda create-function \
             --region "us-east-1" \
             --function-name "${lambda_name}" \
-            --zip-file "fileb://${zip_file}" \
+            --zip-file "fileb://${lambda_dir}/${zip_file}" \
             --role "${role_arn}" \
             --handler "index.handler" \
             --runtime nodejs14.x \
@@ -32,7 +39,7 @@ do
         echo "Updating lambda function"
         aws lambda update-function-code \
             --function-name "${lambda_name}" \
-            --zip-file "fileb://${zip_file}" \
+            --zip-file "fileb://${lambda_dir}/${zip_file}" \
             --profile uni
         ;;
     esac

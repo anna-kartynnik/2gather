@@ -60,6 +60,7 @@ exports.handler = async (event) => {
     const requestBody = JSON.parse(event.body);
 
     // validate data
+    // [TODO] add participants!
     const validation = validate(requestBody);
     if (!validation.isValid) {
       return common.formResponse(400, JSON.stringify({

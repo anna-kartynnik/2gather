@@ -1,17 +1,27 @@
 // common.js should be put near index.js when deploying.
 const common = require('./common.js');
+const { getCalendar, createCalendar } = require('./calendars.js');
 
-const CALENDARS_TABLE = 'user_calendars';
 
 exports.handler = async (event) => {
   try {
     console.log(event);
     const requestBody = JSON.parse(event.body);
 
-    const result = await common.makeQuery(new common.Query(
-      `INSERT INTO ${CALENDARS_TABLE} (user_id, calendar_id) VALUES ($1, $2);`,
-      [requestBody.user_id, requestBody.calendar_id]
-    ));
+    if (!requestBody.user_id || !requestBody.calendar_id) {
+      return common.formResponse(400, JSON.stringify({
+        message: 'Required parameters are not specified'
+      }));
+    }
+
+    const calendars = await getCalendar(requestBody.user_id, requestBody.calendar_id);
+    if (calendars.length > 0) {
+      return common.formResponse(201, JSON.stringify({
+        message: 'Already created'
+      }));
+    }
+
+    const result = await createCalendar(requestBody.user_id, requestBody.calendar_id);
     console.log(JSON.stringify(result));
     return common.formResponse(201, {});
   } catch (err) {
@@ -21,12 +31,3 @@ exports.handler = async (event) => {
     }));
   }
 };
-
-
-// local testing
-// exports.handler({
-//   body: JSON.stringify({
-//     user_id: 'f309e4e7-8d75-4ae8-9f0e-8e9d259d1da4',
-//     calendar_id: 'test calendar 2'
-//   })
-// });
