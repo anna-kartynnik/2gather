@@ -1,4 +1,4 @@
-// [TODO] add backend integration
+import { getAPIGatewaySDK } from './sdkUtil';
 
 import moment from 'moment';
 
@@ -47,13 +47,58 @@ const LIST_ITEMS = [{
 }];
 
 
-export function getAgendaList() {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      return resolve(LIST_ITEMS);
-    }, 2000);
+export function getAgendaList(userId) {
+  // return new Promise((resolve, reject) => {
+  //   setTimeout(() => {
+  //     return resolve(LIST_ITEMS);
+  //   }, 2000);
+  // });
+  return getAPIGatewaySDK().then((sdk) => {
+    return sdk.meetingsGet({
+      user_id: userId
+    }).then((resp) => {
+      const meetings = resp.data.map((meeting) => {
+        return {
+          ...meeting,
+          note: 'todo note',
+          pills: [],
+          is_confirmed: meeting.status === 'confirmed',
+          is_creator: meeting.creator_id === userId
+        }
+      });
+      return meetings;
+    });
   });
 }
+
+export async function createMeeting(meeting) {
+  return getAPIGatewaySDK().then((sdk) => {
+    return sdk.meetingsPost({}, {
+      name: meeting.name,
+      description: meeting.description,
+      creator_id: meeting.creatorId,
+      participants: meeting.participants,
+      preferred_time_start: meeting.preferredTimeStart,
+      preferred_time_end: meeting.preferredTimeEnd,
+      duration: meeting.duration
+    });
+  });
+}
+
+  // if (!body.name) {
+  //   isValid = false;
+  //   message = 'Name is required';
+  // } else if (!body.creator_id) {
+  //   isValid = false;
+  //   message = 'Creator id is required';
+  // } else if (!body.preferred_time_start) {
+  //   isValid = false;
+  //   message = 'Preferred time range (from) is required';
+  // } else if (!body.preferred_time_end) {
+  //   isValid = false;
+  //   message = 'Preferred time range (to) is required';
+  // } else if (!body.duration) {
+
 
 export function getConfirmedAgendaList() {
   return new Promise((resolve, reject) => {

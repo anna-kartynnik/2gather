@@ -1,0 +1,18 @@
+@import './../../colors.scss';
+
+.toast-container {
+  font-family: 'Merriweather-Light';
+
+  .toast {
+    width: 70vw;
+    min-width: 350px;
+
+    .toast-body {
+      padding: 1rem;
+    }
+  }
+
+  .bg-toast {
+    background-color: $toast;
+  }
+}

@@ -28,6 +28,11 @@ function AgendaList(props) {
   //   });
 
   // }, []);
+  if (props.listItems.length === 0) {
+    return (
+      <div>There are no meetings.</div>
+    );
+  }
 
   return (
     <Stack direction='vertical' gap={2}>

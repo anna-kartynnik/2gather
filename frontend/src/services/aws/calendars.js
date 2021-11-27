@@ -21,10 +21,10 @@ import { getAPIGatewaySDK } from './sdkUtil';
 //   }
 // }
 
-export async function saveCalendar(userEmail, calendarId) {
-  getAPIGatewaySDK().then((sdk) => {
+export async function saveCalendar(userId, calendarId) {
+  return getAPIGatewaySDK().then((sdk) => {
     return sdk.calendarsPost({}, {
-      user_email: userEmail,
+      user_id: userId,
       calendar_id: calendarId
     }, {});
   });

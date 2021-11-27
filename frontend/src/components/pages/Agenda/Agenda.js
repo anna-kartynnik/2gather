@@ -17,19 +17,22 @@ function Agenda(props) {
   const [isLoading, setIsLoading] = useState(true);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [listItems, setListItems] = useState([]);
-  const [error, setError] = useState('');
 
   useEffect(() => {
     setIsLoading(true);
     setListItems([]);
     const getFunc = isConfirmedOnly ? getConfirmedAgendaList : getAgendaList;
-    getFunc().then((items) => {
+    getFunc(props.userProfile.awsUserProfile.id).then((items) => {
+      console.log(items);
       setIsLoading(false);
       setListItems(items);
     }).catch((err) => {
       console.log(err);
       setIsLoading(false);
-      setError(err?.message || 'An error has occurred.');
+      props.showToast(
+        err?.message,
+        'danger'
+      );
     });
 
   }, [isConfirmedOnly]);
@@ -71,6 +74,8 @@ function Agenda(props) {
         <CreateMeetingDialog
           showDialog={showCreateDialog}
           onClose={handleCloseCreateDialog}
+          showToast={props.showToast}
+          userProfile={props.userProfile}
         />
       }
     </>

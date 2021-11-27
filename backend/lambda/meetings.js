@@ -1,6 +1,7 @@
 const common = require('./common.js');
 
 const MEETINGS_TABLE = 'meetings';
+const MEETING_PARTICIPANTS_TABLE = 'meeting_participants';
 
 
 async function createMeeting(meeting) {
@@ -19,14 +20,15 @@ async function createMeeting(meeting) {
   return result.rows.length === 1 ? result.rows[0] : null;
 }
 
-async function getMeetingsByCreator(creatorId) {
+async function getMeetingsByParticipant(userId) {
   const result = await common.makeQuery(new common.Query(
-    `SELECT * FROM ${MEETINGS_TABLE} WHERE creator_id=$1;`,
-    [creatorId]
+    `SELECT m.* FROM ${MEETINGS_TABLE} m INNER JOIN ${MEETING_PARTICIPANTS_TABLE} mp ` +
+      `ON m.id = mp.meeting_id WHERE mp.user_id = $1;`,
+    [userId]
   ));
   return result.rows;
 }
 
 
 exports.createMeeting = createMeeting;
-exports.getMeetingsByCreator = getMeetingsByCreator;
+exports.getMeetingsByParticipant = getMeetingsByParticipant;

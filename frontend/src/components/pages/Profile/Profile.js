@@ -40,7 +40,7 @@ function Profile(props) {
     props.closeToast();
     givePermissionsToCalendar(calendarId).then((resp) => {
       console.log(resp);
-      return saveCalendarToAWS(props.userProfile.email, calendarId);
+      return saveCalendarToAWS(props.userProfile.awsUserProfile.id, calendarId);
     }).then((resp) => {
       setSharingCalendarId(null);
       props.showToast('Thank you for sharing your calendar!', 'success');

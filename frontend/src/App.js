@@ -19,22 +19,29 @@ import useUserProfile from './hooks/useUserProfile';
 function App(props) {
   const { token, setToken } = useToken();
   const { userProfile, setUserProfile } = useUserProfile();
-  const [redirectTo, setRedirectTo] = useState(false);
+  const [redirectTo, setRedirectTo] = useState(null);
   const [toastText, setToastText] = useState(null);
-  const [toastBg, setToastBg] = useState('success');
+  const [toastBg, setToastBg] = useState('toast');
 
   const location = useLocation();
 
-  if (!token) {
+  console.log(token);
+  console.log(userProfile);
+
+  if (!token || !userProfile || !userProfile.googleUserProfile || !userProfile.awsUserProfile) {
     return (
-      <Login setToken={setToken} setRedirectTo={setRedirectTo} />
+      <Login
+        setToken={setToken}
+        setUserProfile={setUserProfile}
+        setRedirectTo={setRedirectTo}
+      />
     );
   }
 
-  if (redirectTo) {
-    setRedirectTo(false);
+  if (redirectTo !== null) {
+    setRedirectTo(null);
     return (
-      <Redirect to={location.pathname} />
+      <Redirect to={redirectTo || location.pathname} />
     );
   }
 
@@ -50,12 +57,14 @@ function App(props) {
   return (
     <PageLayout
       setToken={setToken}
-      userProfile={userProfile}
-      setUserProfile={setUserProfile}>
+      userProfile={userProfile}>
       <div className='page-content'>
         <Switch>
           <Route path='/' exact>
-            <Agenda />
+            <Agenda
+              userProfile={userProfile}
+              showToast={showToast}
+            />
           </Route>
           <Route path='/pending'>
             <Pending />

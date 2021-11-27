@@ -14,14 +14,17 @@ function DateTimeRangeInput(props) {
   const onChange = (value, dateString) => {
     console.log('Selected Time: ', value);
     console.log('Formatted Selected Time: ', dateString);
+    props.onChange(value);
   }
 
   const onOk = (value) => {
     console.log('onOk: ', value);
+    props.onChange(value);
   }
 
   return (
     <RangePicker
+      value={props.value}
       className='date-time-range-input'
       //showTime={{ format: 'HH:mm' }}
       showTime={{

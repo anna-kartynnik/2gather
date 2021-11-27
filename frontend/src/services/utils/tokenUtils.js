@@ -1,4 +1,6 @@
-export const refreshTokenSetup = (resp, setToken, refreshAWSToken) => {
+import { refreshAWSToken } from './../aws/login';
+
+export const refreshTokenSetup = (resp, setToken/*, refreshAWSToken*/) => {
   // Timing to renew access token
   let refreshTiming = (resp.tokenObj.expires_in || 3600 - 5 * 60) * 1000;
 
@@ -37,7 +39,7 @@ export function saveToken(userToken) {
 };
 
 export function deleteToken() {
-	localStorage.removeItem(TOKEN_NAME);
+  localStorage.removeItem(TOKEN_NAME);
 }
 
 export function getIdToken() {

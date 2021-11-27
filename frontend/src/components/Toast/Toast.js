@@ -1,10 +1,12 @@
+import './Toast.scss';
+
 import ToastContainer from 'react-bootstrap/ToastContainer';
 import Toast from 'react-bootstrap/Toast';
 
 
 function CustomToast(props) {
   return (
-    <ToastContainer className="p-3" position="top-center">
+    <ToastContainer className="p-3" position="bottom-center">
       <Toast onClose={props.onClose} bg={props.bg} delay={props.delay || 3000} autohide>
 {/*        <Toast.Header closeButton={false}>
            <img

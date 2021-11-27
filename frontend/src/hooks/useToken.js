@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { getToken, saveToken } from './../utils/tokenUtils';
+import { getToken, saveToken } from './../services/utils/tokenUtils';
 
 
 export default function useToken() {

@@ -1,6 +1,6 @@
 // common.js should be put near index.js when deploying.
 const common = require('./common.js');
-const { getMeetingsByCreator } = require('./meetings.js');
+const { getMeetingsByParticipant } = require('./meetings.js');
 
 
 exports.handler = async (event) => {
@@ -8,13 +8,13 @@ exports.handler = async (event) => {
     console.log(event);
     const queryString = event.queryStringParameters;
 
-    if (!queryString.creator_id) {
+    if (!queryString.user_id) {
       return common.formResponse(400, JSON.stringify({
-        message: 'Creator parameter is required'
+        message: '`user_id` parameter is required'
       }));
     }
 
-    const meetings = await getMeetingsByCreator(queryString.creator_id);
+    const meetings = await getMeetingsByParticipant(queryString.user_id);
     //console.log(JSON.stringify(meetings));
     return common.formResponse(200, JSON.stringify(meetings));
   } catch (err) {
