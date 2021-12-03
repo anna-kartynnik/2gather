@@ -35,6 +35,7 @@ exports.handler = async (event) => {
     }
 
     const user = await users.createUser(requestBody);
+    user.email = requestBody.email;
     return common.formResponse(201, JSON.stringify(user));
   } catch (err) {
     console.log('Error: ' + err);

@@ -14,7 +14,7 @@ exports.handler = async (event) => {
       }));
     }
 
-    const meetings = await getMeetingsByParticipant(queryString.user_id);
+    const meetings = await getMeetingsByParticipant(queryString.user_id, queryString.status);
     //console.log(JSON.stringify(meetings));
     return common.formResponse(200, JSON.stringify(meetings));
   } catch (err) {

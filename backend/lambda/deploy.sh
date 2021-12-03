@@ -60,7 +60,8 @@ readonly LAMBDA_TIMEOUT=${LAMBDA_TIMEOUT:-$DEFAULT_LAMBDA_TIMEOUT}
 
 readonly lambda_name="$LAMBDA_PREFIX$name"
 readonly lambda_directory="$lambdas_root/$name"
-files+=("$lambda_directory"/*.js "$lambdas_root/../node_modules")
+#files+=("$lambda_directory"/*.js "$lambdas_root/../node_modules")
+files+=("$lambda_directory"/*.js)
 readonly zip_file="$lambda_directory/$lambda_name.zip"
 
 log "Lambda function name: $lambda_name"
@@ -94,6 +95,7 @@ if [ "$mode" = 'create' ]; then
         --handler "$DEFAULT_HANDLER" \
         --runtime "$LAMBDA_RUNTIME" \
         --timeout "$LAMBDA_TIMEOUT" \
+        --layers "${LAMBDA_LAYERS}" \
         --vpc-config "$vpc_config" \
         --environment "Variables=$postgres_config" \
         --profile "$AWS_PROFILE" ||

@@ -39,9 +39,13 @@ async function makeQueries(client, queries) {
   return res;
 }
 
+function getClient() {
+  return pool.connect();
+}
+
 async function makeQuery(query) {
   console.log('DEBUG: Creating client...');
-  const client = await pool.connect();
+  const client = await getClient();
   console.log('DEBUG: Client created');
   let res = null;
   const shouldBeCommitted = query.isCommittable;
@@ -79,3 +83,5 @@ exports.makeQuery = makeQuery;
 exports.formResponse = formResponse;
 exports.Query = Query;
 exports.isEmailValid = isEmailValid;
+exports.getClient = getClient;
+

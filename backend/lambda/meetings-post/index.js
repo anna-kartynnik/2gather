@@ -12,6 +12,9 @@ function validate(body) {
   } else if (!body.creator_id) {
     isValid = false;
     message = 'Creator id is required';
+  } else if (!body.participants || body.participants.length === 0) {
+    isValid = false;
+    message = 'Participants are required';
   } else if (!body.preferred_time_start) {
     isValid = false;
     message = 'Preferred time range (from) is required';
@@ -46,6 +49,16 @@ function validate(body) {
       isValid = false;
       message = 'Invalid preferred time range: should be in the future';
     }
+    const participants = body.participants;
+    for (let participant of participants) {
+      if (participant.startsWith('email')) {
+        const userEmail = participant.split(':')[1];
+        if (!common.isEmailValid(userEmail)) {
+          isValid = false;
+          message = 'Invalid email in participants list';
+        }
+      }
+    }
   }
 
   return {
@@ -60,7 +73,6 @@ exports.handler = async (event) => {
     const requestBody = JSON.parse(event.body);
 
     // validate data
-    // [TODO] add participants!
     const validation = validate(requestBody);
     if (!validation.isValid) {
       return common.formResponse(400, JSON.stringify({
@@ -68,7 +80,13 @@ exports.handler = async (event) => {
       }));
     }
 
-    const meeting = await meetings.createMeeting(requestBody);
+    const meetingResponse = await meetings.createMeeting(requestBody).catch((err) => {
+      console.log('Could not create a new meeting', err);
+      throw err;
+    });
+    const meeting = requestBody;
+    meeting.id = meetingResponse.id;
+
     console.log(JSON.stringify(meeting));
     return common.formResponse(201, JSON.stringify(meeting));
   } catch (err) {

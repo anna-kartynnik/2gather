@@ -1,13 +1,17 @@
 const { handler } = require('./index.js');
 
-function getMeeting(name, description, creatorId, preferredTimeStart, preferredTimeEnd, duration) {
+const USER_ID = 'dd3f4560-9a5b-39d0-b0c0-ba55f07de8e3';
+const TEST_EMAIL = 'testtest@yopmail.com';
+
+function getMeeting(name, description, creatorId, preferredTimeStart, preferredTimeEnd, duration, participants) {
   return {
     name,
     description,
     creator_id: creatorId,
     preferred_time_start: preferredTimeStart,
     preferred_time_end: preferredTimeEnd,
-    duration
+    duration,
+    participants
   };
 }
 
@@ -17,10 +21,14 @@ function getMeeting(name, description, creatorId, preferredTimeStart, preferredT
     body: JSON.stringify(getMeeting(
       'Meeting namee',
       'short description',
-      '0251d031-675a-e646-7121-8df12a70216a',
+      USER_ID,
       new Date('2022-12-01').toISOString(),
       new Date('2022-12-08').toISOString(),
-      60
+      60,
+      [
+        USER_ID,
+        `email:${TEST_EMAIL}`
+      ]
     ))
   });
   console.log('successful response');
@@ -30,19 +38,26 @@ function getMeeting(name, description, creatorId, preferredTimeStart, preferredT
   let meeting = getMeeting(
     'Meeting namee',
     'short description',
-    '0251d031-675a-e646-7121-8df12a70216a',
+    USER_ID,
     new Date('2022-11-01').toISOString(),
     new Date('2022-12-01').toISOString(),
-    60
+    60,
+    [USER_ID]
   );
-  for (let key of ['name', 'creator_id', 'preferred_time_start', 'preferred_time_end', 'duration']) {
+  for (let key of ['name', 'creator_id', 'preferred_time_start', 'preferred_time_end', 'duration', 'participants']) {
     const value = meeting[key];
-    meeting[key] = null;
-    response = await handler({
-      body: JSON.stringify(meeting)
-    });
-    console.log(`empty '${key}'`);
-    console.log(response);
+    const wrongValues = [null];
+    if (value instanceof Array) {
+      wrongValues.push([]);
+    }
+    for (let wrongValue of wrongValues) {
+      meeting[key] = wrongValue;
+      response = await handler({
+        body: JSON.stringify(meeting)
+      });
+      console.log(`empty '${key}'`);
+      console.log(response);
+    }
     meeting[key] = value;
   }
   meeting.duration = 'wrong number';
@@ -94,6 +109,14 @@ function getMeeting(name, description, creatorId, preferredTimeStart, preferredT
     body: JSON.stringify(meeting)
   });
   console.log('preferred_time_start is in the past');
+  console.log(response);
+
+  meeting.preferred_time_end = new Date('2022-11-01');
+  meeting.participants.push('email:test');
+  response = await handler({
+    body: JSON.stringify(meeting)
+  });
+  console.log('wrong email in participants');
   console.log(response);
 
   // empty data

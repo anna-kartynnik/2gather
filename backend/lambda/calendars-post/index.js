@@ -23,7 +23,9 @@ exports.handler = async (event) => {
 
     const result = await createCalendar(requestBody.user_id, requestBody.calendar_id);
     console.log(JSON.stringify(result));
-    return common.formResponse(201, {});
+    return common.formResponse(201, JSON.stringify({
+      message: 'Created'
+    }));
   } catch (err) {
     console.log('Error: ' + err);
     return common.formResponse(500, JSON.stringify({
