@@ -2,9 +2,10 @@
 
 .toast-container {
   font-family: 'Merriweather-Light';
+  z-index: 10000;
 
   .toast {
-    width: 70vw;
+    width: 60vw;
     min-width: 350px;
 
     .toast-body {

@@ -2,10 +2,11 @@
 
 import BootstrapSpinner from 'react-bootstrap/Spinner';
 
-function Spinner() {
+function Spinner(props) {
   return (
-    <BootstrapSpinner animation='border' role='status' variant='primary'>
-      <span className='visually-hidden'>Loading...</span>
+    <BootstrapSpinner as={props.as || "div"} size={props.size} animation="border"
+      role="status" variant={props.variant || "primary"}>
+      <span className="visually-hidden">Loading...</span>
     </BootstrapSpinner>
   );
 }

@@ -120,14 +120,19 @@ apigClientFactory.newClient = function (config) {
 
     apigClient.meetingsGet = function (params, body, additionalParams) {
         if(additionalParams === undefined) { additionalParams = {}; }
+
+        let paramsToQS = ['user_id'];
+        if (params.status) {
+            paramsToQS.push('status');
+        }
         
-        apiGateway.core.utils.assertParametersDefined(params, ['user_id'], ['body']);
+        apiGateway.core.utils.assertParametersDefined(params, paramsToQS, ['body']);
         
         var usersGetRequest = {
             verb: 'get'.toUpperCase(),
             path: pathComponent + uritemplate('/meetings').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
             headers: apiGateway.core.utils.parseParametersToObject(params, []),
-            queryParams: apiGateway.core.utils.parseParametersToObject(params, ['user_id']),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, paramsToQS),
             body: body
         };
         

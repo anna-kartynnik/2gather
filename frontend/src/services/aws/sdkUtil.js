@@ -1,6 +1,6 @@
 import AWS from 'aws-sdk';
 
-import { getIdToken } from './../utils/tokenUtils';
+import { getIdToken, deleteToken } from './../utils/tokenUtils';
 import { loginToAWS } from './login';
 
 
@@ -19,6 +19,7 @@ function initAPIGatewaySDK() {
 }
 
 export function getAPIGatewaySDK() {
+  console.log('getAPIGatewaySDK');
   return new Promise((resolve, reject) => {
     if (AWS_API_GATEWAY_SDK === null) {
       console.log('no AWS_API_GATEWAY_SDK');
@@ -34,6 +35,16 @@ export function getAPIGatewaySDK() {
           .then(() => {
             console.log('ok after init, resolve');
             resolve(AWS_API_GATEWAY_SDK);
+          })
+          .catch((err) => {
+            const message = err?.message;
+            if (message && message.toLowerCase().indexOf('token expired') > -1) {
+              console.log('deleting token');
+              deleteToken();
+              //resolve(); // or reject?
+              window.location.reload(true);
+            }
+            console.log(err?.message);
           });
       } else {
         console.log('AWS credentials ok, init and resolve');

@@ -17,7 +17,7 @@ function AgendaListItem(props) {
 
   return (
     <Row className={'agenda-list-item ' + (props.item.is_confirmed ? '' : 'not-confirmed')}>
-      <Col className='title-container' sm={5}>
+      <Col className='title-container' sm={7}>
         <Link to={`/meetings/${props.item.id}`}>
           <div className='title'>
             { props.item.name }
@@ -31,7 +31,7 @@ function AgendaListItem(props) {
         </Link>
         <div className='note'>{ props.item.note }</div>
       </Col>
-      <Col sm={4}>
+      <Col sm={2}>
         <AgendaListItemPills
           pills={props.item.pills}
         />

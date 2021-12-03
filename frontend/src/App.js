@@ -22,6 +22,7 @@ function App(props) {
   const [redirectTo, setRedirectTo] = useState(null);
   const [toastText, setToastText] = useState(null);
   const [toastBg, setToastBg] = useState('toast');
+  const [toastPosition, setToastPosition] = useState(null);
 
   const location = useLocation();
 
@@ -45,9 +46,10 @@ function App(props) {
     );
   }
 
-  const showToast = (text, background) => {
+  const showToast = (text, background, position) => {
     setToastText(text ?? 'An error occurred');
     setToastBg(background);
+    setToastPosition(position);
   };
 
   const closeToast = () => {
@@ -83,7 +85,7 @@ function App(props) {
         </Switch>
       </div>
       { toastText &&
-        <Toast text={toastText} bg={toastBg} delay={5000} onClose={closeToast}/>
+        <Toast text={toastText} bg={toastBg} position={toastPosition} delay={5000} onClose={closeToast}/>
       }
     </PageLayout>
   );

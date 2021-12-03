@@ -10,10 +10,13 @@ const { Option } = Select;
 
 
 function ParticipantAutoComplete(props) {
-  const [prevParticipants, setPrevParticipants] = useState([]);
+  const [prevParticipants, setPrevParticipants] = useState(props.initialValue);
 
   useEffect(() => {
     getParticipants().then((data) => {
+      // [TODO] preserve default value
+      console.log(props.initialValue);
+      data.push(...props.initialValue);
       setPrevParticipants(data);
     }).catch((err) => {
       console.log(err);
@@ -28,7 +31,7 @@ function ParticipantAutoComplete(props) {
       if (Number.isNaN(itemInt)) {
         // Should be a new value. [TODO] validate email?
         selected.push({
-          email: item
+          id: `email:${item}`
         });
       } else {
         // Otherwise it's selected from the provided list.
@@ -42,6 +45,7 @@ function ParticipantAutoComplete(props) {
     <Select mode='tags'
       placeholder='Start typing a participant name'
       className='participants-auto-complete'
+      defaultValue={props.initialValue.map(val => val.email)}
       onChange={handleChange}>
       { prevParticipants.map(
           (participant, index) =>

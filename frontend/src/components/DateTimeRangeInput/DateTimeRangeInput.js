@@ -29,10 +29,12 @@ function DateTimeRangeInput(props) {
       //showTime={{ format: 'HH:mm' }}
       showTime={{
         defaultValue: [
-          moment('08:00', 'HH:mm'),
-          moment('18:00', 'HH:mm')],
+          moment('8am', 'ha'),
+          moment('6pm', 'ha')
+        ],
+        minuteStep: 15
       }}
-      format='YYYY-MM-DD HH:mm'
+      format='D MMM h:mm a'
       onChange={onChange}
       onOk={onOk}
       popupStyle={

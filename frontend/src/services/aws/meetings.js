@@ -46,25 +46,67 @@ const LIST_ITEMS = [{
   proposed_option_accepted: false
 }];
 
+class MeetingStatus {
+  static CREATED = 'created';
+  static PROPOSED = 'proposed';
+  static CONFIRMED = 'confirmed';
+}
 
-export function getAgendaList(userId) {
-  // return new Promise((resolve, reject) => {
-  //   setTimeout(() => {
-  //     return resolve(LIST_ITEMS);
-  //   }, 2000);
-  // });
+function getNote(meetingFromDB) {
+  if (meetingFromDB.status === MeetingStatus.CREATED) {
+    return 'We are looking for the best time slots for your meeting...';
+  } else if (meetingFromDB.status === MeetingStatus.PROPOSED) {
+    return `Proposed time: ${moment(meetingFromDB.proposed_time).format('ha')}`;
+  } else if (meetingFromDB.status === MeetingStatus.CONFIRMED) {
+    const timeToMeeting = moment().diff(moment(meetingFromDB.time), 'minutes');
+    if (timeToMeeting < 60) {
+      return `Starts in ${timeToMeeting} minutes`;
+    } else {
+      return `Starts at ${moment(meetingFromDB.time).format('ha')}`;
+    }
+  }
+}
+
+function getPills(meetingFromDB) {
+  const pills = [];
+  if (meetingFromDB.duration < 30) {
+    pills.push({
+      text: `quick: ${meetingFromDB.duration} min`,
+      color: 'success'
+    });
+  } else {
+    const durationStr = meetingFromDB.duration < 60 ?
+      `${meetingFromDB.duration} min` :
+      `${meetingFromDB.duration / 60} h`;
+    pills.push({
+      text: `long: ${durationStr}`,
+      color: 'success'
+    });    
+  }
+  return pills;
+}
+
+function expandMeeting(meetingFromDB, userId) {
+  return {
+    ...meetingFromDB,
+    note: getNote(meetingFromDB),
+    pills: getPills(meetingFromDB),
+    is_confirmed: meetingFromDB.status === MeetingStatus.CONFIRMED,
+    is_creator: meetingFromDB.creator_id === userId
+  };
+}
+
+export function getAgendaList(userId, status) {
+  const params = {
+    user_id: userId
+  };
+  if (status) {
+    params.status = status;
+  }
   return getAPIGatewaySDK().then((sdk) => {
-    return sdk.meetingsGet({
-      user_id: userId
-    }).then((resp) => {
+    return sdk.meetingsGet(params).then((resp) => {
       const meetings = resp.data.map((meeting) => {
-        return {
-          ...meeting,
-          note: 'todo note',
-          pills: [],
-          is_confirmed: meeting.status === 'confirmed',
-          is_creator: meeting.creator_id === userId
-        }
+        return expandMeeting(meeting, userId);
       });
       return meetings;
     });
@@ -85,27 +127,8 @@ export async function createMeeting(meeting) {
   });
 }
 
-  // if (!body.name) {
-  //   isValid = false;
-  //   message = 'Name is required';
-  // } else if (!body.creator_id) {
-  //   isValid = false;
-  //   message = 'Creator id is required';
-  // } else if (!body.preferred_time_start) {
-  //   isValid = false;
-  //   message = 'Preferred time range (from) is required';
-  // } else if (!body.preferred_time_end) {
-  //   isValid = false;
-  //   message = 'Preferred time range (to) is required';
-  // } else if (!body.duration) {
-
-
-export function getConfirmedAgendaList() {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      return resolve(LIST_ITEMS.filter((item) => item.is_confirmed === true));
-    }, 1000);
-  });
+export function getConfirmedAgendaList(userId) {
+  return getAgendaList(userId, MeetingStatus.CONFIRMED);
 }
 
 export function getParticipants() {

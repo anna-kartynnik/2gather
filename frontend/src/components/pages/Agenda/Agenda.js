@@ -17,6 +17,7 @@ function Agenda(props) {
   const [isLoading, setIsLoading] = useState(true);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [listItems, setListItems] = useState([]);
+  const [refresh, setRefresh] = useState(false);
 
   useEffect(() => {
     setIsLoading(true);
@@ -35,19 +36,24 @@ function Agenda(props) {
       );
     });
 
-  }, [isConfirmedOnly]);
+  }, [isConfirmedOnly, refresh]);
 
   const handleConfirmedOnlyChange = (evt) => {
     setIsConfirmedOnly(evt.target.checked);
-  }
+  };
 
   const handleCreateClick = () => {
     setShowCreateDialog(true);
-  }
+  };
 
   const handleCloseCreateDialog = () => {
     setShowCreateDialog(false);
-  }
+  };
+
+  const handleCreateDialogCloseAndRefresh = () => {
+    setShowCreateDialog(false);
+    setRefresh(true);
+  };
 
   return (
     <>
@@ -74,6 +80,7 @@ function Agenda(props) {
         <CreateMeetingDialog
           showDialog={showCreateDialog}
           onClose={handleCloseCreateDialog}
+          onCloseAndRefresh={handleCreateDialogCloseAndRefresh}
           showToast={props.showToast}
           userProfile={props.userProfile}
         />
