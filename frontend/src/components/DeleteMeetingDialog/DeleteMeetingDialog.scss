@@ -1,0 +1,15 @@
+@import './../../colors.scss';
+
+.delete-dialog {
+
+  .modal-dialog {
+
+    .modal-body {
+
+    }
+  }
+
+  .modal-title {
+    color: $primary;
+  }
+}

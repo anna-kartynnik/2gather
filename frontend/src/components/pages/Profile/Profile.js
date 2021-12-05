@@ -43,7 +43,7 @@ function Profile(props) {
       return saveCalendarToAWS(props.userProfile.awsUserProfile.id, calendarId);
     }).then((resp) => {
       setSharingCalendarId(null);
-      props.showToast('Thank you for sharing your calendar!', 'success');
+      props.showToast('Thank you for sharing your calendar!', 'toast');
       console.log(resp);
     }).catch((err) => {
       setSharingCalendarId(null);

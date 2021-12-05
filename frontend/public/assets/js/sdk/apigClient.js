@@ -175,6 +175,143 @@ apigClientFactory.newClient = function (config) {
         
         return apiGatewayClient.makeRequest(meetingsOptionsRequest, authType, additionalParams, config.apiKey);
     };
+
+
+    apigClient.meetingsProposedTimeIdVotesPost = function (params, body, additionalParams) {
+        if(additionalParams === undefined) { additionalParams = {}; }
+
+                console.log(params);
+        console.log(body);
+        
+        apiGateway.core.utils.assertParametersDefined(params, ['id'], ['body']);
+        
+        var meetingsProposedTimeIdVotesPostRequest = {
+            verb: 'post'.toUpperCase(),
+            path: pathComponent + uritemplate('/meetings/proposed-time/{id}/votes').expand(apiGateway.core.utils.parseParametersToObject(params, ['id'])),
+            headers: apiGateway.core.utils.parseParametersToObject(params, []),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
+            body: body
+        };
+        
+        
+        return apiGatewayClient.makeRequest(meetingsProposedTimeIdVotesPostRequest, authType, additionalParams, config.apiKey);
+    };
+
+    apigClient.meetingsProposedTimeIdVotesDelete = function (params, body, additionalParams) {
+        if(additionalParams === undefined) { additionalParams = {}; }
+        
+        apiGateway.core.utils.assertParametersDefined(params, ['id'], ['body']);
+        
+        var meetingsProposedTimeIdVotesDeleteRequest = {
+            verb: 'delete'.toUpperCase(),
+            path: pathComponent + uritemplate('/meetings/proposed-time/{id}/votes').expand(apiGateway.core.utils.parseParametersToObject(params, ['id'])),
+            headers: apiGateway.core.utils.parseParametersToObject(params, []),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
+            body: body
+        };
+        
+        
+        return apiGatewayClient.makeRequest(meetingsProposedTimeIdVotesDeleteRequest, authType, additionalParams, config.apiKey);
+    };
+    
+    
+    apigClient.meetingsProposedTimeIdVotesOptions = function (params, body, additionalParams) {
+        if(additionalParams === undefined) { additionalParams = {}; }
+        
+        apiGateway.core.utils.assertParametersDefined(params, [], ['body']);
+        
+        var meetingsProposedTimeIdVotesOptionsRequest = {
+            verb: 'options'.toUpperCase(),
+            path: pathComponent + uritemplate('/meetings/proposed-time/{id}/votes').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
+            headers: apiGateway.core.utils.parseParametersToObject(params, []),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
+            body: body
+        };
+        
+        
+        return apiGatewayClient.makeRequest(meetingsProposedTimeIdVotesOptionsRequest, authType, additionalParams, config.apiKey);
+    };
+
+
+    apigClient.meetingsIdPut = function (params, body, additionalParams) {
+        if(additionalParams === undefined) { additionalParams = {}; }
+
+        console.log(params);
+        
+        apiGateway.core.utils.assertParametersDefined(params, ['id'], ['body']);
+        
+        var meetingsIdPutRequest = {
+            verb: 'put'.toUpperCase(),
+            path: pathComponent + uritemplate('/meetings/{id}').expand(apiGateway.core.utils.parseParametersToObject(params, ['id'])),
+            headers: apiGateway.core.utils.parseParametersToObject(params, []),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
+            body: body
+        };
+        
+        
+        return apiGatewayClient.makeRequest(meetingsIdPutRequest, authType, additionalParams, config.apiKey);
+    };
+    
+    
+    apigClient.meetingsIdDelete = function (params, body, additionalParams) {
+        if(additionalParams === undefined) { additionalParams = {}; }
+        
+        apiGateway.core.utils.assertParametersDefined(params, ['id'], ['body']);
+
+        console.log(uritemplate('/meetings/{id}').expand(apiGateway.core.utils.parseParametersToObject(params, ['id'])));
+        
+        var meetingsIdDeleteRequest = {
+            verb: 'delete'.toUpperCase(),
+            path: pathComponent + uritemplate('/meetings/{id}').expand(apiGateway.core.utils.parseParametersToObject(params, ['id'])),
+            headers: apiGateway.core.utils.parseParametersToObject(params, []),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
+            body: body
+        };
+        
+        
+        return apiGatewayClient.makeRequest(meetingsIdDeleteRequest, authType, additionalParams, config.apiKey);
+    };
+
+
+    apigClient.meetingsIdGet = function (params, body, additionalParams) {
+        if(additionalParams === undefined) { additionalParams = {}; }
+        
+        apiGateway.core.utils.assertParametersDefined(params, ['id'], ['body']);
+
+        console.log(uritemplate('/meetings/{id}').expand(apiGateway.core.utils.parseParametersToObject(params, ['id'])));
+        
+        var meetingsIdGetRequest = {
+            verb: 'get'.toUpperCase(),
+            path: pathComponent + uritemplate('/meetings/{id}').expand(apiGateway.core.utils.parseParametersToObject(params, ['id'])),
+            headers: apiGateway.core.utils.parseParametersToObject(params, []),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
+            body: body
+        };
+        
+        
+        return apiGatewayClient.makeRequest(meetingsIdGetRequest, authType, additionalParams, config.apiKey);
+    };
+
+
+    apigClient.meetingsIdConfirmPost = function (params, body, additionalParams) {
+        if(additionalParams === undefined) { additionalParams = {}; }
+
+                console.log(params);
+        console.log(body);
+        
+        apiGateway.core.utils.assertParametersDefined(params, ['id'], ['body']);
+        
+        var meetingsProposedTimeIdVotesPostRequest = {
+            verb: 'post'.toUpperCase(),
+            path: pathComponent + uritemplate('/meetings/{id}/confirm').expand(apiGateway.core.utils.parseParametersToObject(params, ['id'])),
+            headers: apiGateway.core.utils.parseParametersToObject(params, []),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
+            body: body
+        };
+        
+        
+        return apiGatewayClient.makeRequest(meetingsProposedTimeIdVotesPostRequest, authType, additionalParams, config.apiKey);
+    };
     
     
     apigClient.usersGet = function (params, body, additionalParams) {

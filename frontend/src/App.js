@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import './App.less';
 
 import { Switch, Route, Redirect, useLocation } from 'react-router-dom';
+import { withRouter } from 'react-router';
 
 import PageLayout from './components/layout/PageLayout';
 import Agenda from './components/pages/Agenda/Agenda';
@@ -14,6 +15,7 @@ import Toast from './components/Toast/Toast';
 
 import useToken from './hooks/useToken';
 import useUserProfile from './hooks/useUserProfile';
+import {MeetingStatus} from './services/aws/meetings';
 
 
 function App(props) {
@@ -48,8 +50,8 @@ function App(props) {
 
   const showToast = (text, background, position) => {
     setToastText(text ?? 'An error occurred');
-    setToastBg(background);
-    setToastPosition(position);
+    setToastBg(background ?? 'toast');
+    setToastPosition(position ?? 'bottom-center');
   };
 
   const closeToast = () => {
@@ -69,7 +71,17 @@ function App(props) {
             />
           </Route>
           <Route path='/pending'>
-            <Pending />
+            <Pending
+              userProfile={userProfile}
+              showToast={showToast}
+            />
+          </Route>
+          <Route path='/created'>
+            <Agenda
+              status={MeetingStatus.CREATED}
+              userProfile={userProfile}
+              showToast={showToast}
+            />
           </Route>
           <Route path='/profile'>
             <Profile
@@ -79,22 +91,21 @@ function App(props) {
             />
           </Route>
           <Route path='/meetings/:id'>
-            <MeetingDetails />
+            <MeetingDetailsWithRouter />
           </Route>
         
         </Switch>
       </div>
       { toastText &&
-        <Toast text={toastText} bg={toastBg} position={toastPosition} delay={5000} onClose={closeToast}/>
+        <Toast text={toastText} bg={toastBg} 
+          position={toastPosition} delay={5000}
+          onClose={closeToast}
+        />
       }
     </PageLayout>
   );
 }
 
-export default App;
+const MeetingDetailsWithRouter = withRouter(MeetingDetails);
 
-function Todo() {
-  return (
-    <div>Pending</div>
-  );
-}
+export default App;

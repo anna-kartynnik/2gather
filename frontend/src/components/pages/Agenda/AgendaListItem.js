@@ -8,15 +8,14 @@ import { Link } from 'react-router-dom';
 
 import AgendaListItemPills from './AgendaListItemPills';
 import {
-  AgendaListItemCreatorActions,
-  AgendaListItemParticipantActions
-} from './AgendaListItemActions';
+  MeetingListItemCreatorActions,
+  MeetingListItemParticipantActions
+} from './../../MeetingActions/MeetingActions';
 
 
 function AgendaListItem(props) {
-
   return (
-    <Row className={'agenda-list-item ' + (props.item.is_confirmed ? '' : 'not-confirmed')}>
+    <Row className={"g-0 py-3 px-4 agenda-list-item " + (props.item.is_confirmed ? "" : "not-confirmed")}>
       <Col className='title-container' sm={7}>
         <Link to={`/meetings/${props.item.id}`}>
           <div className='title'>
@@ -38,9 +37,16 @@ function AgendaListItem(props) {
       </Col>
       <Col sm={3}>
         {/* [TODO] if current user === creator */}
-        { props.item.is_creator && <AgendaListItemCreatorActions /> }
+        { props.item.is_creator &&
+          <MeetingListItemCreatorActions
+            item={props.item}
+            handleDelete={props.handleDelete}
+            handleEdit={props.handleEdit}
+            handleConfirm={props.handleConfirm}
+          />
+        }
         { !props.item.is_creator &&
-          <AgendaListItemParticipantActions
+          <MeetingListItemParticipantActions
             item={props.item}
           />
         }

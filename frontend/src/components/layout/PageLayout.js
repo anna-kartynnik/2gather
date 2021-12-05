@@ -17,7 +17,7 @@ import notif from './../../images/notification.svg';
 function PageLayout(props) {
 
   return (
-    <Container className='page-layout'> {/* vh-100 d-flex flex-column'>*/}
+    <Container className="page-layout my-3"> {/* vh-100 d-flex flex-column'>*/}
       <Row className='header gy-5'>
         <Stack direction='horizontal' gap={3}>
          {/* <div><img src={logo} className='logo' alt='app logo' /></div>

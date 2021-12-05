@@ -2,8 +2,9 @@
 
 .agenda-list-item {
   border: 1px solid $lightGray;
-  padding: 1em 2em;
+  /*padding: 0.8em 1.3em;*/
   align-items: center;
+  /*width: 100%;*/
 
   &.not-confirmed {
     border: none;
@@ -20,7 +21,7 @@
       font-size: 1.2em;
       line-height: 1.2;
       color: $text;
-      margin-bottom: 0.8em;
+      margin-bottom: 0.5em;
 
       .option-pill {
         font-family: Merriweather-Regular;
@@ -31,7 +32,7 @@
       font-family: Merriweather-LightItalic;
       font-size: 0.9em;
       line-height: 1.2;
-      color: $gray;      
+      color: $gray;
     }
   }
 }

@@ -53,7 +53,7 @@ function CreateMeetingDialog(props) {
     if (!preferredTimeRange || preferredTimeRange.length !== 2 || !preferredTimeRange[0] || !preferredTimeRange[1]) {
       invalidCollection['preferredTimeRange'] = 'Preferred time range is required';
       isFormValid = false;
-    } else if (moment(preferredTimeRange[0]).before(moment())) {
+    } else if (moment(preferredTimeRange[0]).isBefore(moment())) {
       invalidCollection['preferredTimeRange'] = 'Preferred time range should be in the future';
       isFormValid = false;
     }
@@ -92,7 +92,7 @@ function CreateMeetingDialog(props) {
       props.showToast(
         'Your meeting has been successfully created. Give us a few seconds and check the pending items to see the suggested time slots.',
         'toast',
-        'middle-center'
+        //'middle-center'
       );
       props.onCloseAndRefresh();
     }).catch((err) => {
@@ -100,7 +100,7 @@ function CreateMeetingDialog(props) {
       props.showToast(
         err?.message,
         'danger',
-        'middle-center'
+        //'middle-center'
       );
     });
   };
@@ -176,10 +176,10 @@ function CreateMeetingDialog(props) {
               </div>
             }
           </Form.Group>
-          <Form.Group controlId='formFile' className='mb-3'>
+          {/*<Form.Group controlId='formFile' className='mb-3'>
             <Form.Label>Attachments</Form.Label>
             <Form.Control type='file' />
-          </Form.Group>
+          </Form.Group>*/}
         </Form>
       </Modal.Body>
       <Modal.Footer>

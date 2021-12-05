@@ -9,6 +9,8 @@ function PageTabs(props) {
   let activeTab = 'agenda';
   if (window.location.pathname === '/pending') {
     activeTab = 'pending';
+  } else if (window.location.pathname === '/created') {
+    activeTab = 'created';
   }
   console.log(activeTab);
 
@@ -20,6 +22,9 @@ function PageTabs(props) {
       </Nav.Item>
       <Nav.Item>
         <Nav.Link as={Link} to='/pending' eventKey='pending'>Pending</Nav.Link>
+      </Nav.Item>
+      <Nav.Item>
+        <Nav.Link as={Link} to='/created' eventKey='created'>Created</Nav.Link>
       </Nav.Item>
     </Nav>
   );

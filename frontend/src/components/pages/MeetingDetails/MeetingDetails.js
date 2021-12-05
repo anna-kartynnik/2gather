@@ -18,11 +18,11 @@ function MeetingDetails(props) {
   useEffect(() => {
     getMeetingById(props.match.params.id).then((resp) => {
       console.log(resp);
-      setMeeting(resp);
+      setMeeting(resp.data);
     }).catch((err) => {
       console.log(err);
     });
-  }, [])
+  }, []);
 
   const handlePresentationModeClick = () => {
     console.log('TODO');

@@ -49,7 +49,8 @@ async function makeQuery(query) {
   console.log('DEBUG: Client created');
   let res = null;
   const shouldBeCommitted = query.isCommittable;
-  console.log(`DEBUG: committable ${shouldBeCommitted}`)
+  console.log(`DEBUG: committable ${shouldBeCommitted}`);
+  console.log('DEBUG: ', query.text);
   try {
     if (shouldBeCommitted) {
       const results = await makeQueries(client, [query]);
@@ -80,6 +81,7 @@ function isEmailValid(email) {
 }
 
 exports.makeQuery = makeQuery;
+exports.makeQueries = makeQueries;
 exports.formResponse = formResponse;
 exports.Query = Query;
 exports.isEmailValid = isEmailValid;

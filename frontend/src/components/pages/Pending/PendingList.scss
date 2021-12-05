@@ -1,0 +1,15 @@
+
+.pending-list {
+  max-height: 60vh;
+  overflow-y: auto;
+  font-family: Merriweather-Light;
+  h5 {
+    font-family: Merriweather-Regular;
+  }
+
+  h6 {
+    font-family: Merriweather-LightItalic;
+    margin-bottom: 0.1rem;
+    margin-top: 0.3rem;
+  }
+}

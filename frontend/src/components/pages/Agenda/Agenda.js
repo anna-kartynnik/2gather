@@ -4,26 +4,34 @@ import Button from 'react-bootstrap/Button';
 
 import SwitchElement from './../../SwitchElement/SwitchElement';
 import AgendaList from './AgendaList';
-import Spinner from './../../Spinner/Spinner';
 import PageActions from './../../PageActions/PageActions';
 import PageTabs from './../../PageTabs/PageTabs';
 import CreateMeetingDialog from './../../CreateMeetingDialog/CreateMeetingDialog';
+import EditMeetingDialog from './../../EditMeetingDialog/EditMeetingDialog';
+import DeleteMeetingDialog from './../../DeleteMeetingDialog/DeleteMeetingDialog';
+import ConfirmMeetingTimeDialog from './../../ConfirmMeetingTimeDialog/ConfirmMeetingTimeDialog';
 
-import { getAgendaList, getConfirmedAgendaList } from './../../../services/aws/meetings';
+import { getAgendaList, getConfirmedAgendaList, MeetingStatus } from './../../../services/aws/meetings';
 
 
 function Agenda(props) {
   const [isConfirmedOnly, setIsConfirmedOnly] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [listItems, setListItems] = useState([]);
-  const [refresh, setRefresh] = useState(false);
+  const [refresh, setRefresh] = useState(new Date().getTime());
+  const [meetingToDelete, setMeetingToDelete] = useState(null);
+  const [meetingToEdit, setMeetingToEdit] = useState(null);
+  const [meetingToConfirm, setMeetingToConfirm] = useState(null);
 
   useEffect(() => {
     setIsLoading(true);
     setListItems([]);
     const getFunc = isConfirmedOnly ? getConfirmedAgendaList : getAgendaList;
-    getFunc(props.userProfile.awsUserProfile.id).then((items) => {
+    getFunc(props.userProfile.awsUserProfile.id, props.status).then((items) => {
       console.log(items);
       setIsLoading(false);
       setListItems(items);
@@ -36,7 +44,7 @@ function Agenda(props) {
       );
     });
 
-  }, [isConfirmedOnly, refresh]);
+  }, [isConfirmedOnly, refresh, props.status]);
 
   const handleConfirmedOnlyChange = (evt) => {
     setIsConfirmedOnly(evt.target.checked);
@@ -52,7 +60,55 @@ function Agenda(props) {
 
   const handleCreateDialogCloseAndRefresh = () => {
     setShowCreateDialog(false);
-    setRefresh(true);
+    setRefresh(new Date().getTime());
+  };
+
+  const handleDelete = (meeting) => () => {
+    setMeetingToDelete(meeting);
+    setShowDeleteDialog(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setShowDeleteDialog(false);
+    setMeetingToDelete(null);
+  };
+
+  const handleDeleteDialogCloseAndRefresh = () => {
+    setShowDeleteDialog(false);
+    setRefresh(new Date().getTime());
+    setMeetingToDelete(null);
+  };
+
+  const handleEdit = (meeting) => () => {
+    setMeetingToEdit(meeting);
+    setShowEditDialog(true);
+  };
+
+  const handleCloseEditDialog = () => {
+    setShowEditDialog(false);
+    setMeetingToEdit(null);
+  };
+
+  const handleEditDialogCloseAndRefresh = () => {
+    setShowEditDialog(false);
+    setRefresh(new Date().getTime());
+    setMeetingToEdit(null);
+  };
+
+  const handleConfirm = (meeting) => () => {
+    setMeetingToConfirm(meeting);
+    setShowConfirmDialog(true);
+  };
+
+  const handleCloseConfirmDialog = () => {
+    setShowConfirmDialog(false);
+    setMeetingToConfirm(null);
+  };
+
+  const handleConfirmDialogCloseAndRefresh = () => {
+    setShowConfirmDialog(false);
+    setRefresh(new Date().getTime());
+    setMeetingToConfirm(null);
   };
 
   return (
@@ -67,15 +123,22 @@ function Agenda(props) {
       />
       <PageTabs />
       <div className='m-3'></div>
-      <SwitchElement
-        isConfirmedOnly={isConfirmedOnly}
-        onConfirmedOnlyChange={handleConfirmedOnlyChange}
-      />
-      <div className='m-3'></div>
-      { isLoading &&
-        <Spinner />
+      { props.status !== MeetingStatus.CREATED &&
+        <SwitchElement
+          isConfirmedOnly={isConfirmedOnly}
+          onConfirmedOnlyChange={handleConfirmedOnlyChange}
+        />
       }
-      <AgendaList listItems={listItems} />
+      <div className='m-3'></div>
+      <AgendaList
+        status={props.status}
+        isLoading={isLoading}
+        listItems={listItems}
+        showToast={props.showToast}
+        handleDelete={handleDelete}
+        handleEdit={handleEdit}
+        handleConfirm={handleConfirm}
+      />
       { showCreateDialog &&
         <CreateMeetingDialog
           showDialog={showCreateDialog}
@@ -83,6 +146,35 @@ function Agenda(props) {
           onCloseAndRefresh={handleCreateDialogCloseAndRefresh}
           showToast={props.showToast}
           userProfile={props.userProfile}
+        />
+      }
+      { showEditDialog &&
+        <EditMeetingDialog
+          showDialog={showEditDialog}
+          onClose={handleCloseEditDialog}
+          onCloseAndRefresh={handleEditDialogCloseAndRefresh}
+          showToast={props.showToast}
+          meetingId={meetingToEdit.id}
+          //userProfile={props.userProfile}
+        />
+      }
+      { showConfirmDialog &&
+        <ConfirmMeetingTimeDialog
+          showDialog={showConfirmDialog}
+          onClose={handleCloseConfirmDialog}
+          onCloseAndRefresh={handleConfirmDialogCloseAndRefresh}
+          showToast={props.showToast}
+          meeting={meetingToConfirm}
+          //userProfile={props.userProfile}
+        />
+      }
+      { showDeleteDialog &&
+        <DeleteMeetingDialog
+          showDialog={showDeleteDialog}
+          onClose={handleCloseDeleteDialog}
+          onCloseAndRefresh={handleDeleteDialogCloseAndRefresh}
+          showToast={props.showToast}
+          meeting={meetingToDelete}
         />
       }
     </>

@@ -1,0 +1,29 @@
+@import './../../colors.scss';
+
+.edit-dialog {
+  font-family: Merriweather-Light;
+
+  .modal-dialog {
+    @media (min-width: 992px) {
+      width: 70vw;
+      max-width: 900px;
+    }
+
+    .modal-body {
+      .invalid {
+        width: 100%;
+        color: $danger;
+        margin-top: 0.25rem;
+        font-size: 0.875em;
+      }
+
+      .alert {
+        font-size: 0.9em;
+      }
+    }
+  }
+
+  .modal-title {
+    color: $primary;
+  }
+}
