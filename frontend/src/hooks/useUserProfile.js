@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { getUserProfile, saveUserProfile } from './../services/utils/userUtils';
+import { getUserProfile, saveUserProfile, deleteUserProfile as deleteUserProfileFromStorage } from './../services/utils/userUtils';
 
 
 export default function useUserProfile() {
@@ -27,9 +27,16 @@ export default function useUserProfile() {
     setAWSUserProfile: saveAWSUserProfile
   };
 
+  const deleteUserProfile = () => {
+    setGoogleUserProfile(null);
+    setAWSUserProfile(null);
+    deleteUserProfileFromStorage();
+  };
+
   return {
+    userProfile,
     setUserProfile,
-    userProfile
+    deleteUserProfile
   };
 
 

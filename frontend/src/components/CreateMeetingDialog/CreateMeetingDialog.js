@@ -79,7 +79,7 @@ function CreateMeetingDialog(props) {
     createMeeting({
       name,
       description,
-      participants: participants.map((p) => p.id),
+      participants: participants,
       preferredTimeStart: preferredTimeRange[0].toISOString(),
       preferredTimeEnd: preferredTimeRange[1].toISOString(),
       duration,

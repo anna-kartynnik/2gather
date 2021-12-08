@@ -81,7 +81,21 @@ apigClientFactory.newClient = function (config) {
 
     var apiGatewayClient = apiGateway.core.apiGatewayClientFactory.newClient(simpleHttpClientConfig, sigV4ClientConfig);
     
-    
+    apigClient.calendarsGet = function (params, body, additionalParams) {
+        if(additionalParams === undefined) { additionalParams = {}; }
+        
+        apiGateway.core.utils.assertParametersDefined(params, ['user_id'], ['body']);
+        
+        var calendarsGetRequest = {
+            verb: 'get'.toUpperCase(),
+            path: pathComponent + uritemplate('/calendars').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
+            headers: apiGateway.core.utils.parseParametersToObject(params, []),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, ['user_id']),
+            body: body
+        };
+        
+        return apiGatewayClient.makeRequest(calendarsGetRequest, authType, additionalParams, config.apiKey);
+    };    
     
     apigClient.calendarsPost = function (params, body, additionalParams) {
         if(additionalParams === undefined) { additionalParams = {}; }

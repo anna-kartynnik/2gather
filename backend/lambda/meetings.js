@@ -38,23 +38,26 @@ async function createMeeting(meeting) {
       throw new Error('Could not get id of newly generated meeting.');
     }
 
-    // [TODO] batch insert?
+    let participantsQueryText = `INSERT INTO ${MEETING_PARTICIPANTS_TABLE} (meeting_id, user_id, user_email) VALUES `;
+    const participantsQueryValues = [meetingId];
     for (let participant of meeting.participants) {
       let userParamName = 'user_id';
       let userParamValue = participant;
       if (participant.startsWith('email')) {
-        userParamName = 'user_email';
-        userParamValue = participant.split(':')[1]
+        const userEmail = participant.split(':')[1];
+        const paramIndex = participantsQueryValues.length + 1;
+        participantsQueryText += `($1, (SELECT id FROM ${USERS_TABLE} WHERE email = $${paramIndex}), $${paramIndex}),`;
+        participantsQueryValues.push(userEmail);
+      } else {
+        const paramIndex = participantsQueryValues.length + 1;
+        participantsQueryText += ` ($1, $${paramIndex}, NULL),`;
+        participantsQueryValues.push(participant);
       }
-      const participantInsertResult = await client.query(
-        `INSERT INTO ${MEETING_PARTICIPANTS_TABLE} (meeting_id, ${userParamName})
-         VALUES ($1, $2)`,
-         [
-           meetingId,
-           userParamValue
-         ]
-      );
     }
+    participantsQueryText = participantsQueryText.substring(0, participantsQueryText.length - 1);
+    participantsQueryText += ';';
+
+    await client.query(participantsQueryText, participantsQueryValues);
 
     await client.query('COMMIT');
   } catch (err) {

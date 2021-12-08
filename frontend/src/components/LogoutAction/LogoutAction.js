@@ -16,8 +16,10 @@ function LogoutAction(props) {
     console.log('logout successful');
     //props.setToken({});
     //deleteToken();
-    deleteUserProfile();
+    //deleteUserProfile();
     props.setToken({});
+    props.deleteUserProfile();
+    //deleteUserProfile();
   };
 
   const onFailure = (resp) => {

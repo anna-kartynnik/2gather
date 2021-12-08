@@ -23,5 +23,5 @@ export function saveUserProfile(googleUserProfile, awsUserProfile) {
 };
 
 export function deleteUserProfile() {
-	localStorage.removeItem(USER_PARAM_NAME);
+  localStorage.removeItem(USER_PARAM_NAME);
 }

@@ -29,3 +29,11 @@ export async function saveCalendar(userId, calendarId) {
     }, {});
   });
 }
+
+export async function getCalendarList(userId) {
+  return getAPIGatewaySDK().then((sdk) => {
+    return sdk.calendarsGet({
+      user_id: userId
+    }, {}, {});
+  });
+} 

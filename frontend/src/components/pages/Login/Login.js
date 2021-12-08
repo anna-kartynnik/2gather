@@ -2,7 +2,6 @@ import React from 'react';
 
 import './Login.scss';
 
-
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Button from 'react-bootstrap/Button';
@@ -41,39 +40,48 @@ function Login(props) {
       console.log(awsUserResponse.status === 400);
       console.log(awsUserResponse.data.message);
       console.log(awsUserResponse.data.message === 'User not found');
-      // if (awsUserResponse.status === 400 && awsUserResponse.data.message &&
-      //   awsUserResponse.data.message === 'User not found') {
-      //   console.log('creating user');
-      //   return createUser(userEmail);
-      // } else {
-      //  return new Promise().resolve(awsUserResponse);
-      //}
-    // }).then((awsUserResponse) => {
-      //props.setUserProfile.setAWSUserProfile(awsUserResponse.id);
-      //props.setRedirectTo(true);
-      return Promise.resolve(awsUserResponse);
+
+    //   // if (awsUserResponse.status === 400 && awsUserResponse.data.message &&
+    //   //   awsUserResponse.data.message === 'User not found') {
+    //   //   console.log('creating user');
+    //   //   return createUser(userEmail);
+    //   // } else {
+    //   //  return new Promise().resolve(awsUserResponse);
+    //   //}
+    // // }).then((awsUserResponse) => {
+    //   //props.setUserProfile.setAWSUserProfile(awsUserResponse.id);
+    //   //props.setRedirectTo(true);
+      
+      //return Promise.resolve(awsUserResponse);
+
+      console.log(awsUserResponse);
+      props.setUserProfile.setAWSUserProfile(awsUserResponse.data);
+      //props.setRedirectTo(redirectTo);
     }).catch((err) => {
       console.log(err);
       if (err.status === 400 && err.data.message &&
         err.data.message === 'User not found') {
         console.log('creating user');
         redirectTo = '/profile';
-        return createUser(userEmail);
-        // .then((awsUserResponse) => {
-        //   props.setUserProfile.setAWSUserProfile(awsUserResponse.id);
-        //   props.setRedirectTo(true);
-        // }).catch((err2) => {
-        //   console.log(err2);
-        // });
+        return createUser(userEmail).then((awsUserResponse) => {
+          console.log(awsUserResponse);
+          props.setUserProfile.setAWSUserProfile(awsUserResponse.data);
+          //setAwsUserProfile(awsUserResponse);
+          //handleNewUserCreation();
+        }).catch((err2) => {
+          console.log(err2);
+        });
       } else {
-        return Promise.resolve({});
+        console.log(err);
+        props.showToast(err?.message ?? 'An error occurred');
+        //return Promise.resolve({});
       }
-    }).then((awsUserResponse) => {
-      console.log(awsUserResponse);
-      props.setUserProfile.setAWSUserProfile(awsUserResponse.data);
-      props.setRedirectTo(redirectTo);
-    }).catch((err2) => {
-      console.log(err2);
+    // }).then((awsUserResponse) => {
+    //   console.log(awsUserResponse);
+    //   props.setUserProfile.setAWSUserProfile(awsUserResponse.data);
+    //   props.setRedirectTo(redirectTo);
+    // }).catch((err2) => {
+    //   console.log(err2);
     });
 
   };
@@ -93,19 +101,19 @@ function Login(props) {
   });
 
   return (
-    <div className='login-page'>
-      <div className='right-bottom-polygon'></div>
-      <div className='right-top-polygon'></div>
-      <div className='left-top-polygon'></div>
-      <div className='left-bottom-polygon'></div>
-      <Container className='login-page-container'>
-        <Row className='justify-content-center'>
+    <div className="login-page">
+      <div className="right-bottom-polygon"></div>
+      <div className="right-top-polygon"></div>
+      <div className="left-top-polygon"></div>
+      <div className="left-bottom-polygon"></div>
+      <Container className="login-page-container">
+        <Row className="justify-content-center">
           <img src={logo} alt="logo" className="logo"/>
         </Row>
-        <Row className='justify-content-center'>
-          <h1 className='logo-text'>2gather</h1>
+        <Row className="justify-content-center">
+          <h1 className="logo-text">2gather</h1>
         </Row>
-        <Row className='justify-content-center login-button'>
+        <Row className="justify-content-center login-button">
           {/*<div className="g-signin2" data-onsuccess="onSignIn"></div>*/}
           <Button
             variant="secondary"

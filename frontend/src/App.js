@@ -12,6 +12,7 @@ import MeetingDetails from './components/pages/MeetingDetails/MeetingDetails';
 import Login from './components/pages/Login/Login';
 import Profile from './components/pages/Profile/Profile';
 import Toast from './components/Toast/Toast';
+import CalendarsDialog from './components/CalendarsDialog/CalendarsDialog';
 
 import useToken from './hooks/useToken';
 import useUserProfile from './hooks/useUserProfile';
@@ -20,7 +21,7 @@ import {MeetingStatus} from './services/aws/meetings';
 
 function App(props) {
   const { token, setToken } = useToken();
-  const { userProfile, setUserProfile } = useUserProfile();
+  const { userProfile, setUserProfile, deleteUserProfile } = useUserProfile();
   const [redirectTo, setRedirectTo] = useState(null);
   const [toastText, setToastText] = useState(null);
   const [toastBg, setToastBg] = useState('toast');
@@ -30,23 +31,6 @@ function App(props) {
 
   console.log(token);
   console.log(userProfile);
-
-  if (!token || !userProfile || !userProfile.googleUserProfile || !userProfile.awsUserProfile) {
-    return (
-      <Login
-        setToken={setToken}
-        setUserProfile={setUserProfile}
-        setRedirectTo={setRedirectTo}
-      />
-    );
-  }
-
-  if (redirectTo !== null) {
-    setRedirectTo(null);
-    return (
-      <Redirect to={redirectTo || location.pathname} />
-    );
-  }
 
   const showToast = (text, background, position) => {
     setToastText(text ?? 'An error occurred');
@@ -58,11 +42,31 @@ function App(props) {
     setToastText(null);
   };
 
+  if (!token || !userProfile || !userProfile.googleUserProfile || !userProfile.awsUserProfile) {
+    return (
+      <Login
+        setToken={setToken}
+        setUserProfile={setUserProfile}
+        setRedirectTo={setRedirectTo}
+        showToast={showToast}
+      />
+    );
+  }
+
+  if (redirectTo !== null) {
+    setRedirectTo(null);
+    return (
+      <Redirect to={redirectTo || location.pathname} />
+    );
+  }
+
   return (
     <PageLayout
       setToken={setToken}
-      userProfile={userProfile}>
-      <div className='page-content'>
+      userProfile={userProfile}
+      deleteUserProfile={deleteUserProfile}>
+      <div className="page-content">
+
         <Switch>
           <Route path='/' exact>
             <Agenda
@@ -87,7 +91,6 @@ function App(props) {
             <Profile
               userProfile={userProfile}
               showToast={showToast}
-              closeToast={closeToast}
             />
           </Route>
           <Route path='/meetings/:id'>
@@ -96,6 +99,10 @@ function App(props) {
         
         </Switch>
       </div>
+      <CalendarsDialog
+        userProfile={userProfile}
+        showToast={showToast}
+      />
       { toastText &&
         <Toast text={toastText} bg={toastBg} 
           position={toastPosition} delay={5000}

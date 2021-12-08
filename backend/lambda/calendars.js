@@ -9,7 +9,7 @@ async function createCalendar(userId, calendarId) {
     [userId, calendarId]
   ));
 
-  return result;  
+  return result;
 }
 
 async function getCalendar(userId, calendarId) {
@@ -20,6 +20,15 @@ async function getCalendar(userId, calendarId) {
   return result.rows;
 }
 
+async function getCalendarsByUser(userId) {
+  const result = await common.makeQuery(new common.Query(
+    `SELECT * FROM ${USER_CALENDARS_TABLE} WHERE user_id=$1;`,
+    [userId]
+  ));
+  return result.rows;
+}
+
 
 exports.createCalendar = createCalendar;
 exports.getCalendar = getCalendar;
+exports.getCalendarsByUser = getCalendarsByUser;

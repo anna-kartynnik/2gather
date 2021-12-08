@@ -180,13 +180,25 @@ export function getAgendaList(userId, status) {
   });
 }
 
+function getParticipantsForBackend(participants) {
+  const participantsToSave = participants.map((p) => {
+    if (p.label === p.value) {
+      // kostyl for email-only participant
+      return `email:${p.value}`;
+    } else {
+      return p.value;
+    }
+  });
+  return participantsToSave;
+}
+
 export async function createMeeting(meeting) {
   return getAPIGatewaySDK().then((sdk) => {
     return sdk.meetingsPost({}, {
       name: meeting.name,
       description: meeting.description,
       creator_id: meeting.creatorId,
-      participants: meeting.participants,
+      participants: getParticipantsForBackend(meeting.participants),
       preferred_time_start: meeting.preferredTimeStart,
       preferred_time_end: meeting.preferredTimeEnd,
       duration: meeting.duration
@@ -204,7 +216,7 @@ export function updateMeeting(meeting) {
       description: meeting.description,
       status: meeting.status,
       confirmed_time: meeting.confirmed_time,
-      participants: meeting.participants,
+      participants: getParticipantsForBackend(meeting.participants),
     });
   });
 }
@@ -261,6 +273,7 @@ export function getPendingAgendaList(userId) {
 }
 
 export function getParticipants() {
+  // [TODO] get participants that user usually use.
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       return resolve([{

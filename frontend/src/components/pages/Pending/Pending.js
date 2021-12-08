@@ -43,7 +43,7 @@ function Pending(props) {
       );
     });
 
-  }, [refresh, userProfile, showToast]);
+  }, [refresh/*, userProfile, showToast*/]);
 
   const handleCreateClick = () => {
     setShowCreateDialog(true);

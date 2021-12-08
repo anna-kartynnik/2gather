@@ -46,7 +46,7 @@ function Agenda(props) {
       );
     });
 
-  }, [isConfirmedOnly, refresh, userProfile, status, showToast]);
+  }, [isConfirmedOnly, refresh, status/*, userProfile, showToast*/]);
 
   const handleConfirmedOnlyChange = (evt) => {
     setIsConfirmedOnly(evt.target.checked);

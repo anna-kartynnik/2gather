@@ -30,7 +30,10 @@ function PageLayout(props) {
           </div>
           <div><img src={notif} alt='notifications' /></div>
           <div>
-            <LogoutAction setToken={props.setToken}/>
+            <LogoutAction
+              setToken={props.setToken}
+              deleteUserProfile={props.deleteUserProfile}
+            />
           </div>
         </Stack>
       </Row>

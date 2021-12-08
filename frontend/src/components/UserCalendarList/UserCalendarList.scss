@@ -1,0 +1,29 @@
+@import './../../colors.scss';
+
+.calendar-list {
+  .calendar-item {
+    border: 1px solid $lightGray;
+    padding: 1em 2em;
+    align-items: center;
+
+    .actions img {
+      width: 30px;
+    }
+  }
+
+  .calendar-color {
+    width: 30px;
+    height: 30px;
+  }
+
+  .calendar-title {
+    color: $text;
+    font-family: Sanchez;
+    font-size: 1.2rem;
+  }
+
+  .calendar-description {
+    color: $secondary;
+    font-family: Merriweather-Regular;
+  }
+}

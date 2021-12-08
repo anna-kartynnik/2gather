@@ -17,9 +17,7 @@ import moment from 'moment';
 function EditMeetingDialog(props) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [participants, setParticipants] = useState([]);//props.userProfile.awsUserProfile]);
-  //const [preferredTimeRange, setPreferredTimeRange] = useState([]);  // moment objects
-  //const [duration, setDuration] = useState(60);
+  const [participants, setParticipants] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [invalid, setInvalid] = useState({});
 
@@ -46,7 +44,7 @@ function EditMeetingDialog(props) {
         //'middle-center'
       );
     });
-  }, [meetingId, showToast]);
+  }, [meetingId/*, showToast*/]);
 
   const handleNameChange = (evt) => {
     setName(evt.target.value);
@@ -71,20 +69,6 @@ function EditMeetingDialog(props) {
       invalidCollection['participants'] = 'Participants are required';
       isFormValid = false;
     }
-    // if (!preferredTimeRange || preferredTimeRange.length !== 2 || !preferredTimeRange[0] || !preferredTimeRange[1]) {
-    //   invalidCollection['preferredTimeRange'] = 'Preferred time range is required';
-    //   isFormValid = false;
-    // } else if (moment(preferredTimeRange[0]).before(moment())) {
-    //   invalidCollection['preferredTimeRange'] = 'Preferred time range should be in the future';
-    //   isFormValid = false;
-    // }
-    // if (!duration) {
-    //   invalidCollection['duration'] = 'Duration is required';
-    //   isFormValid = false;
-    // } else if (duration < 10 || duration > 60 * 10) {
-    //   invalidCollection['duration'] = 'Duration value is invalid: should be between 10 and 600';
-    //   isFormValid = false;
-    // }
 
     setInvalid(invalidCollection);
     return isFormValid;
@@ -104,12 +88,8 @@ function EditMeetingDialog(props) {
       id: savedMeeting.id,
       name,
       description,
-      participants: participants.map((p) => p.id),
+      participants: participants,
       status: savedMeeting.status,
-      //preferredTimeStart: preferredTimeRange[0].toISOString(),
-      //preferredTimeEnd: preferredTimeRange[1].toISOString(),
-      //duration,
-      //creatorId: props.userProfile.awsUserProfile.id
     }).then((resp) => {
       setIsLoading(false);
       props.showToast(
