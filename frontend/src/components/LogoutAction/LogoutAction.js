@@ -13,7 +13,7 @@ const CLIENT_ID = '510174098853-s214e0rlu9ihecnop3liep462q54euvv.apps.googleuser
 
 function LogoutAction(props) {
   const onLogoutSuccess = (resp) => {
-  	console.log('logout successful');
+    console.log('logout successful');
     //props.setToken({});
     //deleteToken();
     deleteUserProfile();
@@ -26,9 +26,9 @@ function LogoutAction(props) {
   };
 
   const { signOut } = useGoogleLogout({
-  	CLIENT_ID,
-  	onLogoutSuccess,
-  	onFailure,
+    CLIENT_ID,
+    onLogoutSuccess,
+    onFailure,
   });
 
   return (

@@ -27,24 +27,26 @@ function Agenda(props) {
   const [meetingToEdit, setMeetingToEdit] = useState(null);
   const [meetingToConfirm, setMeetingToConfirm] = useState(null);
 
+  const { userProfile, status, showToast } = props;
+
   useEffect(() => {
     setIsLoading(true);
     setListItems([]);
     const getFunc = isConfirmedOnly ? getConfirmedAgendaList : getAgendaList;
-    getFunc(props.userProfile.awsUserProfile.id, props.status).then((items) => {
+    getFunc(userProfile.awsUserProfile.id, status).then((items) => {
       console.log(items);
       setIsLoading(false);
       setListItems(items);
     }).catch((err) => {
       console.log(err);
       setIsLoading(false);
-      props.showToast(
+      showToast(
         err?.message,
         'danger'
       );
     });
 
-  }, [isConfirmedOnly, refresh, props.status]);
+  }, [isConfirmedOnly, refresh, userProfile, status, showToast]);
 
   const handleConfirmedOnlyChange = (evt) => {
     setIsConfirmedOnly(evt.target.checked);

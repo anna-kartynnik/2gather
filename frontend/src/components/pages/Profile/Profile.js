@@ -8,7 +8,6 @@ import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 import Spinner from './../../Spinner/Spinner';
-import Toast from './../../Toast/Toast';
 
 import shareIcon from './../../../images/share.svg';
 
@@ -20,6 +19,8 @@ function Profile(props) {
   const [isLoading, setIsLoading] = useState(true);
   const [sharingCalendarId, setSharingCalendarId] = useState(null);
 
+  const { showToast } = props;
+
   useEffect(() => {
     getUserCalendarList().then((resp) => {
       setIsLoading(false);
@@ -27,12 +28,12 @@ function Profile(props) {
       console.log(resp);
     }).catch((err) => {
       setIsLoading(false);
-      props.showToast(
+      showToast(
         err?.message,
         'danger'
       );
     });
-  }, []);
+  }, [showToast]);
 
   const shareCalendar = (calendarId) => () => {
     console.log(calendarId);

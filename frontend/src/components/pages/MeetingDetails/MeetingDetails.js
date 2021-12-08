@@ -14,15 +14,16 @@ import { getMeetingById } from './../../../services/aws/meetings';
 function MeetingDetails(props) {
   const [meeting, setMeeting] = useState({});
   console.log(props);
+  const meetingId = props.match.params.id;
 
   useEffect(() => {
-    getMeetingById(props.match.params.id).then((resp) => {
+    getMeetingById(meetingId).then((resp) => {
       console.log(resp);
       setMeeting(resp.data);
     }).catch((err) => {
       console.log(err);
     });
-  }, []);
+  }, [meetingId]);
 
   const handlePresentationModeClick = () => {
     console.log('TODO');

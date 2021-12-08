@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import './AgendaListItemPills.scss';
 import Badge from 'react-bootstrap/Badge';
-import Col from 'react-bootstrap/Col';
 
 
 function AgendaListItemPills(props) {

@@ -5,13 +5,8 @@ import './EditMeetingDialog.scss';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Alert from 'react-bootstrap/Alert';
 
-import DateTimeRangeInput from './../DateTimeRangeInput/DateTimeRangeInput';
-import DurationInput from './../DurationInput/DurationInput';
 import ParticipantAutoComplete from './../ParticipantAutoComplete/ParticipantAutoComplete';
 import Spinner from './../Spinner/Spinner';
 
@@ -31,8 +26,10 @@ function EditMeetingDialog(props) {
   const [savedMeeting, setSavedMeeting] = useState({});
   console.log(props);
 
+  const { meetingId, showToast } = props;
+
   useEffect(() => {
-    getMeetingById(props.meetingId).then((resp) => {
+    getMeetingById(meetingId).then((resp) => {
       console.log(resp);
       const meeting = resp.data;
       setName(meeting.name);
@@ -43,13 +40,13 @@ function EditMeetingDialog(props) {
     }).catch((err) => {
       console.log(err);
       setIsLoading(false);
-      props.showToast(
+      showToast(
         err?.message ?? 'An error occurred',
         'danger',
         //'middle-center'
       );
     });
-  }, []);
+  }, [meetingId, showToast]);
 
   const handleNameChange = (evt) => {
     setName(evt.target.value);

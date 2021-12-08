@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import './AgendaListItem.scss';
 import Row from 'react-bootstrap/Row';

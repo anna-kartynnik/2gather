@@ -12,16 +12,18 @@ const { Option } = Select;
 function ParticipantAutoComplete(props) {
   const [prevParticipants, setPrevParticipants] = useState(props.initialValue);
 
+  const { initialValue } = props;
+
   useEffect(() => {
     getParticipants().then((data) => {
       // [TODO] preserve default value
-      console.log(props.initialValue);
-      data.push(...props.initialValue);
+      console.log(initialValue);
+      data.push(...initialValue);
       setPrevParticipants(data);
     }).catch((err) => {
       console.log(err);
     });
-  }, []);
+  }, [initialValue]);
 
   const handleChange = (value) => {
     console.log(`selected ${value}`);

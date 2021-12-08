@@ -25,23 +25,25 @@ function Pending(props) {
   const [meetingToEdit, setMeetingToEdit] = useState(null);
   const [meetingToConfirm, setMeetingToConfirm] = useState(null);
 
+  const { userProfile, showToast } = props;
+
   useEffect(() => {
     setIsLoading(true);
     setListItems([]);
-    getPendingAgendaList(props.userProfile.awsUserProfile.id).then((items) => {
+    getPendingAgendaList(userProfile.awsUserProfile.id).then((items) => {
       console.log(items);
       setIsLoading(false);
       setListItems(items);
     }).catch((err) => {
       console.log(err);
       setIsLoading(false);
-      props.showToast(
+      showToast(
         err?.message,
         'danger'
       );
     });
 
-  }, [refresh]);
+  }, [refresh, userProfile, showToast]);
 
   const handleCreateClick = () => {
     setShowCreateDialog(true);

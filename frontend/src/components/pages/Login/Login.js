@@ -5,7 +5,6 @@ import './Login.scss';
 
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import { useGoogleLogin } from 'react-google-login';
 import { refreshTokenSetup } from './../../../services/utils/tokenUtils';

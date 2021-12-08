@@ -16,7 +16,7 @@ import {
 } from './../../MeetingActions/MeetingActions';
 import Spinner from './../../Spinner/Spinner';
 
-import { saveMeetingTimeVote, confirmMeeting, MeetingStatus } from './../../../services/aws/meetings';
+import { saveMeetingTimeVote, confirmMeeting } from './../../../services/aws/meetings';
 
 
 function PendingListItem(props) {

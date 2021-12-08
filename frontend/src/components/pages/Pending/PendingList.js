@@ -1,10 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
 import './PendingList.scss';
 
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import Stack from 'react-bootstrap/Stack';
 import PendingListItem from './PendingListItem';
 import Spinner from './../../Spinner/Spinner';

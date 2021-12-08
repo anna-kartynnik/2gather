@@ -1,16 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
 import './PageLayout.scss';
 
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import Stack from 'react-bootstrap/Stack';
 import Logo from './../Logo/Logo';
 import LogoutAction from './../LogoutAction/LogoutAction';
 import { Link } from 'react-router-dom';
 
-import logo from './../../images/logo192.png';
 import notif from './../../images/notification.svg';
 
 
@@ -20,8 +18,6 @@ function PageLayout(props) {
     <Container className="page-layout my-3"> {/* vh-100 d-flex flex-column'>*/}
       <Row className='header gy-5'>
         <Stack direction='horizontal' gap={3}>
-         {/* <div><img src={logo} className='logo' alt='app logo' /></div>
-          <div><h1>2gather</h1></div>*/}
           <Logo />
           <div className="user-avatar ms-auto">
             { props.userProfile && props.userProfile.googleUserProfile && props.userProfile.googleUserProfile.picture &&

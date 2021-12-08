@@ -1,10 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import './MeetingActions.scss';
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
-
-import DeleteMeetingDialog from './../DeleteMeetingDialog/DeleteMeetingDialog';
 
 import editIcon from './../../images/pencil.svg';
 import rescheduleIcon from './../../images/reschedule.svg';
