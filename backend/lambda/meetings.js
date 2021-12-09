@@ -262,7 +262,7 @@ async function getMeetingById(id) {
     `SELECT * FROM ${MEETINGS_TABLE} WHERE id = $1`,
     [id]
   ));
-  return result.rows.length === 1 ? result.rows[0] : result.rows; 
+  return result.rows.length === 1 ? result.rows[0] : null; 
 }
 
 async function getMeetingParticipants(id) {
@@ -270,6 +270,14 @@ async function getMeetingParticipants(id) {
     `SELECT u.* FROM ${USERS_TABLE} u INNER JOIN ${MEETING_PARTICIPANTS_TABLE} mp ON u.id = mp.user_id
        WHERE mp.meeting_id = $1;`,
      [id]
+  ));
+  return result.rows;
+}
+
+async function getMeetingParticipantsWithoutId(meetingId) {
+  const result = await common.makeQuery(new common.Query(
+    `SELECT mp.* FROM ${MEETING_PARTICIPANTS_TABLE} mp WHERE mp.meeting_id = $1 AND mp.user_id IS NULL;`,
+     [meetingId]
   ));
   return result.rows;
 }
@@ -351,6 +359,7 @@ exports.getMeetingsByParticipant = getMeetingsByParticipant;
 exports.getMeetingsByStatus = getMeetingsByStatus;
 exports.getMeetingById = getMeetingById;
 exports.getMeetingParticipants = getMeetingParticipants;
+exports.getMeetingParticipantsWithoutId = getMeetingParticipantsWithoutId;
 exports.getMeetingParticipantsWithCalendars = getMeetingParticipantsWithCalendars;
 exports.saveMeetingTimeSuggestion = saveMeetingTimeSuggestion;
 exports.createMeetingVote = createMeetingVote;

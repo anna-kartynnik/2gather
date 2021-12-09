@@ -1,6 +1,7 @@
 // common.js should be put near index.js when deploying.
 const common = require('./common.js');
 const meetings = require('./meetings.js');
+const sqs_utils = require('./sqs_utils.js');
 
 
 function validate(body) {
@@ -88,6 +89,14 @@ exports.handler = async (event) => {
     meeting.id = meetingResponse.id;
 
     console.log(JSON.stringify(meeting));
+
+    const sqsResp = await sqs_utils.sendMessage(meeting).catch((err) => {
+      console.log('Could not send a message to the queue', err);
+      throw err;
+    });
+
+    console.log(sqsResp);
+
     return common.formResponse(201, JSON.stringify(meeting));
   } catch (err) {
     console.log('Error: ' + err);

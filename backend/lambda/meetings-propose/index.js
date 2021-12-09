@@ -3,18 +3,58 @@ const common = require('./common.js');
 const meetings_utils = require('./meetings.js');
 const google_utils = require('./google_utils.js');
 const propose_utils = require('./propose.js');
+const sqs_utils =require('./sqs_utils.js');
 
+
+async function deleteSQSMessage(messageReceiptHandle) {
+  const deleteResponse = await sqs_utils.deleteMessage(messageReceiptHandle).catch((err) => {
+    console.log('Could not delete SQS message', err);
+  });
+  return deleteResponse;
+}
 
 exports.handler = async (event) => {
   try {
 
-    const meetings = await meetings_utils.getMeetingsByStatus(meetings_utils.MeetingStatus.CREATED).catch((err) => {
-      console.log('Could not get meetings with status created', err);
+    const sqsMessageResponse = await sqs_utils.receiveMessage().catch((err) => {
+      console.log('Could not get message from the queue', err);
       throw err;
     });
-    console.log(meetings);
 
-    for (let meeting of meetings) {
+    console.log(sqsMessageResponse);
+
+    if (!sqsMessageResponse['Messages'] || sqsMessageResponse['Messages'].length === 0) {
+      console.log('No messages');
+      return;
+    }
+
+    for (let sqsMessage of sqsMessageResponse['Messages']) {
+
+      const messageAttributes = sqsMessage['MessageAttributes'];
+      console.log(messageAttributes);
+
+      const meetingId = messageAttributes['meetingId']['StringValue'];
+      const messageReceiptHandle = sqsMessage['ReceiptHandle'];
+
+      const meeting = await meetings_utils.getMeetingById(meetingId).catch((err) => {
+        console.log(`Could not get meeting with id: ${meetingId}`, err);
+        throw err;
+      });
+
+    // const meetings = await meetings_utils.getMeetingsByStatus(meetings_utils.MeetingStatus.CREATED).catch((err) => {
+    //   console.log('Could not get meetings with status created', err);
+    //   throw err;
+    // });
+      console.log(meeting);
+
+      if (meeting.status !== meetings_utils.MeetingStatus.CREATED) {
+        console.log(`Message with id ${meetingId} has status different from CREATED`);
+        await deleteSQSMessage(messageReceiptHandle);
+        continue;
+      }
+
+
+    //for (let meeting of meetings) {
       const calendars = await meetings_utils.getMeetingParticipantsWithCalendars(
         meeting.id
       ).catch((err) => {
@@ -56,7 +96,17 @@ exports.handler = async (event) => {
       // save proposed slots and change meeting status to 'proposed'
       const saveResult = await meetings_utils.saveMeetingTimeSuggestion(meeting.id, proposedSlots);
       console.log(saveResult);
-      break;
+
+      const participantsWithoutId = await meetings_utils.getMeetingParticipantsWithoutId(meeting.id).catch((err) => {
+        console.log(`Could not get participants without id for meeting with id ${meeting.id}`, err);
+        // Ignore?
+      });
+
+      // [TODO] send emails to participants without id but with email.
+
+      await deleteSQSMessage(messageReceiptHandle);
+
+      //break;
     }
 
     // console.log(JSON.stringify(meeting));
