@@ -1,0 +1,21 @@
+@import './../../colors.scss';
+
+.question-list-item {
+  border: 1px solid $lightGray;
+  align-items: center;
+
+  .title {
+    font-family: Merriweather-Black;
+    font-size: 1.2em;
+    line-height: 1.2;
+    color: $text;
+    margin-bottom: 0.5em;
+
+  }
+  .text {
+    font-family: Merriweather-Regular;
+    font-size: 0.9em;
+    line-height: 1.2;
+    color: $gray;
+  }
+}

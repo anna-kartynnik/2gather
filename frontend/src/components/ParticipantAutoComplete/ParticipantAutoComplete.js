@@ -12,14 +12,21 @@ const { Option } = Select;
 function ParticipantAutoComplete(props) {
   const [prevParticipants, setPrevParticipants] = useState(props.initialValue);
 
-  const { initialValue } = props;
+  const { initialValue, currentUser } = props;
 
   useEffect(() => {
-    getParticipants().then((data) => {
+    getParticipants(currentUser.id).then((resp) => {
       // [TODO] preserve default value
       console.log(initialValue);
-      data.push(...initialValue);
-      setPrevParticipants(data);
+      console.log(resp);
+      const participants = resp.data.filter((p) => p.email);
+      for (let initial of initialValue) {
+        if (!participants.find((p) => p.email === initial.email)) {
+          participants.push(initial);
+        }
+      }
+
+      setPrevParticipants(participants);
     }).catch((err) => {
       console.log(err);
     });
@@ -51,12 +58,12 @@ function ParticipantAutoComplete(props) {
       className='participants-auto-complete'
       defaultValue={props.initialValue.map((p) => ({
         label: p.email,
-        value: p.id
+        value: p.id || `email:${p.email}`
       }))}
       onChange={handleChange}
       options={prevParticipants.map((p) => ({
         label: p.email,
-        value: p.id
+        value: p.id || `email:${p.email}`
       }))}>
       { /*prevParticipants.map(
           (participant, index) =>

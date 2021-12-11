@@ -15,6 +15,7 @@ import {
   MeetingListItemParticipantActions
 } from './../../MeetingActions/MeetingActions';
 import Spinner from './../../Spinner/Spinner';
+import ProposedTimesList from './../../ProposedTimesList/ProposedTimesList';
 
 import { saveMeetingTimeVote, confirmMeeting } from './../../../services/aws/meetings';
 
@@ -30,7 +31,11 @@ function PendingListItem(props) {
           </div>
         </Link>
         <div className="note">
-          <Stack direction="horizontal" gap={2}>
+          <ProposedTimesList
+            {...props}
+            showLabel={true}
+          />
+{/*          <Stack direction="horizontal" gap={2}>
             <span>Vote for time:</span>
             { props.item.proposed_times.map((pt) =>
               <ProposedTimeBadge
@@ -41,7 +46,7 @@ function PendingListItem(props) {
                 handleRefresh={props.handleRefresh}
               />
             )}
-          </Stack>
+          </Stack>*/}
         </div>
       </Col>
       <Col sm={3}>
@@ -70,24 +75,24 @@ function ProposedTimeBadge(props) {
   const toggleVote = () => {
     // [TODO] confirm deletion?
     setIsLoading(true);
-    if (props.currentUserId === props.item.creator_id) {
-      // Creator confirms the slot.
-      const changedMeeting = props.item;
-      changedMeeting.confirmed_time = props.item.proposed_time;
-      confirmMeeting(changedMeeting).then((data) => {
-        console.log(data);
-        setIsLoading(false);
-        props.showToast('Your meeting has been confirmed!');
-        props.handleRefresh();
-      }).catch((err) => {
-        console.log(err);
-        setIsLoading(false);
-        props.showToast(
-          err?.message ?? 'An error occurred',
-          'danger'
-        );
-      });
-    } else {
+    // if (props.currentUserId === props.item.creator_id) {
+    //   // Creator confirms the slot.
+    //   const changedMeeting = props.item;
+    //   changedMeeting.confirmed_time = props.item.proposed_time;
+    //   confirmMeeting(changedMeeting).then((data) => {
+    //     console.log(data);
+    //     setIsLoading(false);
+    //     props.showToast('Your meeting has been confirmed!');
+    //     props.handleRefresh();
+    //   }).catch((err) => {
+    //     console.log(err);
+    //     setIsLoading(false);
+    //     props.showToast(
+    //       err?.message ?? 'An error occurred',
+    //       'danger'
+    //     );
+    //   });
+    // } else {
       // Participant votes for time.
       saveMeetingTimeVote(props.item.meeting_proposed_time_id, props.currentUserId, props.item.vote_id).then((data) => {
         console.log(data);
@@ -102,7 +107,7 @@ function ProposedTimeBadge(props) {
           'danger'
         );
       });
-    }
+    //}
   };
 
   if (isLoading) {

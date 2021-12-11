@@ -272,22 +272,27 @@ export function getPendingAgendaList(userId) {
   });
 }
 
-export function getParticipants() {
+export function getParticipants(id) {
   // [TODO] get participants that user usually use.
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      return resolve([{
-        id: '1',
-        email: 'test1@gmail.com'
-      }, {
-        id: '2',
-        email: 'test2@gmail.com'
-      }, {
-        id: '3',
-        email: 'test3@gmail.com'
-      }])
-    }, 1000);
-  });
+  // return new Promise((resolve, reject) => {
+  //   setTimeout(() => {
+  //     return resolve([{
+  //       id: '1',
+  //       email: 'test1@gmail.com'
+  //     }, {
+  //       id: '2',
+  //       email: 'test2@gmail.com'
+  //     }, {
+  //       id: '3',
+  //       email: 'test3@gmail.com'
+  //     }])
+  //   }, 1000);
+  // });
+  return getAPIGatewaySDK().then((sdk) => {
+    return sdk.participantsGet({
+      creator_id: id,
+    });
+  }); 
 }
 
 export async function saveMeetingTimeVote(proposedTimeId, userId, voteId) {
@@ -302,7 +307,7 @@ export async function saveMeetingTimeVote(proposedTimeId, userId, voteId) {
   });
 }
 
-export function getMeetingById(id) {
+export function getMeetingById(id, userId) {
   // return new Promise((resolve, reject) => {
   //   setTimeout(() => {
   //     const items = LIST_ITEMS.filter((item) => item.id === id);
@@ -312,6 +317,7 @@ export function getMeetingById(id) {
   return getAPIGatewaySDK().then((sdk) => {
     return sdk.meetingsIdGet({
       id: id,
+      user_id: userId
     });
   }); 
 }
@@ -327,6 +333,44 @@ export function deleteMeeting(id) {
   //     return resolve();
   //   }, 1000);
   // });  
+}
+
+export function getQuestions(meetingId, userId) {
+  return getAPIGatewaySDK().then((sdk) => {
+    return sdk.meetingsIdQuestionsGet({
+      id: meetingId,
+      user_id: userId
+    });
+  });
+}
+
+export function addQuestion(params) {
+  return getAPIGatewaySDK().then((sdk) => {
+    return sdk.meetingsIdQuestionsPost(params, params);
+  });
+}
+
+export function deleteQuestion(meetingId, questionId) {
+  return getAPIGatewaySDK().then((sdk) => {
+    return sdk.meetingsIdQuestionsDelete({
+      id: meetingId,
+      question_id: questionId
+    });
+  });
+}
+
+export async function saveQuestionVote(meetingId, questionId, userId, voteId) {
+  return getAPIGatewaySDK().then((sdk) => {
+    const func = voteId === null ? sdk.meetingsIdQuestionIdVotesPost : sdk.meetingsIdQuestionIdVotesDelete;
+    return func({
+      id: meetingId,
+      question_id: questionId
+    }, {
+      id: meetingId,
+      question_id: questionId,
+      user_id: userId
+    });
+  });
 }
 
 

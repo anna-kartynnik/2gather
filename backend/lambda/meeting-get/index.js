@@ -1,6 +1,7 @@
 // common.js should be put near index.js when deploying.
 const common = require('./common.js');
-const { getMeetingById, getMeetingParticipants } = require('./meetings.js');
+const { getMeetingById, getMeetingParticipants, getProposedTimes, MeetingStatus } = require('./meetings.js');
+
 
 
 exports.handler = async (event) => {
@@ -14,6 +15,14 @@ exports.handler = async (event) => {
       }));
     }
 
+    const queryString = event.queryStringParameters;
+
+    if (!queryString.user_id) {
+      return common.formResponse(400, JSON.stringify({
+        message: '`user_id` parameter is required'
+      }));
+    }
+
     const meeting = await getMeetingById(meetingId).catch((err) => {
       console.log(`Could not get meeting by id ${meetingId}`, err);
       throw err;
@@ -23,6 +32,13 @@ exports.handler = async (event) => {
       throw err;
     });
     meeting.participants = participants;
+
+    if (meeting.status === MeetingStatus.PROPOSED) {
+      const proposedTimes = await getProposedTimes(queryString.user_id, [meetingId])
+        .catch(common.handlePromiseReject('Could not get proposed times'));
+      meeting.proposed_times = proposedTimes;
+    }
+
     //console.log(JSON.stringify(meetings));
     return common.formResponse(200, JSON.stringify(meeting));
   } catch (err) {

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import './CreateMeetingDialog.scss';
+import './../scss/CreateDialog.scss';
 
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
@@ -137,6 +137,7 @@ function CreateMeetingDialog(props) {
           <Form.Group className='mb-3'>
             <Form.Label>Participants</Form.Label>
             <ParticipantAutoComplete
+              currentUser={props.userProfile.awsUserProfile}
               initialValue={participants}
               onChange={handleParticipantsChange}
             />

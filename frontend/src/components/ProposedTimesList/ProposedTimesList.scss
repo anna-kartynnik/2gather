@@ -1,0 +1,28 @@
+@import './../../colors.scss';
+
+.proposed-times-list {
+  font-family: Merriweather-Light;
+  font-size: 0.9em;
+  line-height: 1.2;
+  color: $gray;
+
+  .proposed-time-badge {
+    &.btn {
+      padding: 0;
+    } 
+        
+    .time.badge {
+      font-family: Merriweather-Light;
+      font-weight: 400;
+      font-size: 0.9em;
+      color: $secondary;
+      border: 1px solid rgba(114, 128, 150, 0.3);
+
+      &.voted {
+        border: 2px solid $success;
+        color: $success;
+        font-weight: 700;
+      }
+    }
+  }
+}

@@ -7,10 +7,10 @@ import Button from 'react-bootstrap/Button';
 
 import Spinner from './../Spinner/Spinner';
 
-import { deleteMeeting } from './../../services/aws/meetings';
+import { deleteQuestion } from './../../services/aws/meetings';
 
 
-function DeleteMeetingDialog(props) {
+function DeleteQuestionDialog(props) {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = () => {
@@ -19,18 +19,17 @@ function DeleteMeetingDialog(props) {
     }
 
     setIsLoading(true);
-    deleteMeeting(props.meeting.id).then((resp) => {
+    deleteQuestion(props.meetingId, props.question.id).then((resp) => {
       setIsLoading(false);
       props.showToast(
-        'Your meeting has been successfully deleted.'
+        'Your question has been successfully deleted.'
       );
       props.onCloseAndRefresh();
     }).catch((err) => {
       setIsLoading(false);
       props.showToast(
         err?.message,
-        'danger',
-        //'top-center'
+        'danger'
       );
     });
   };
@@ -43,7 +42,7 @@ function DeleteMeetingDialog(props) {
       </Modal.Header>
       <Modal.Body>
         <div>
-          Are you sure you want to delete {props.meeting.name}?
+          Are you sure you want to delete this question?
         </div>
       </Modal.Body>
       <Modal.Footer>
@@ -62,4 +61,4 @@ function DeleteMeetingDialog(props) {
   );
 }
 
-export default DeleteMeetingDialog;
+export default DeleteQuestionDialog;

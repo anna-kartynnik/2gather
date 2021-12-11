@@ -1,0 +1,16 @@
+@import './../../colors.scss';
+
+.question-list-item-actions {
+  img {
+    width: 25px;
+  }
+
+  .like-container {
+    position: relative;
+
+    .badge {
+      top: 10px;
+      left: -3px;
+    }
+  }
+}

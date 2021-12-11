@@ -6,9 +6,9 @@ const meetings = require('./meetings.js');
 function validate(params) {
   let message = '';
   let isValid = true;
-  if (!params.proposed_time_id) {
+  if (!params.question_id) {
     isValid = false;
-    message = 'Proposed time is required';
+    message = 'Question id is required';
   } else if (!params.user_id) {
     isValid = false;
     message = 'User id is required';
@@ -25,9 +25,9 @@ exports.handler = async (event) => {
     console.log(event);
     const requestBody = JSON.parse(event.body);
     const params = {
+      question_id: requestBody.question_id,
       user_id: requestBody.user_id
     };
-    params.proposed_time_id = event.pathParameters.id;
 
     // validate data
     const validation = validate(params);
@@ -37,14 +37,13 @@ exports.handler = async (event) => {
       }));
     }
 
-    const meetingVoteResponse = await meetings.deleteMeetingVote(params).catch((err) => {
-      console.log('Could not save a meeting vote', err);
-      throw err;
-    });
-    const response = meetingVoteResponse;
+    const voteResponse = await meetings.createQuestionVote(params).catch(
+      common.handlePromiseReject('Could not save a meeting vote')
+    );
+    const response = voteResponse;
 
     console.log(JSON.stringify(response));
-    return common.formResponse(204, JSON.stringify(response));
+    return common.formResponse(201, JSON.stringify(response));
   } catch (err) {
     console.log('Error: ' + err);
     return common.formResponse(500, JSON.stringify({

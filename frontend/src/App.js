@@ -94,7 +94,10 @@ function App(props) {
             />
           </Route>
           <Route path='/meetings/:id'>
-            <MeetingDetailsWithRouter />
+            <MeetingDetailsWithRouter
+              userProfile={userProfile}
+              showToast={showToast}
+            />
           </Route>
         
         </Switch>

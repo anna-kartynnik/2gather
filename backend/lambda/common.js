@@ -80,10 +80,18 @@ function isEmailValid(email) {
   return re.test(email);
 }
 
+function handlePromiseReject(message) {
+  return (err) => {
+    console.log(message, err);
+    throw err;
+  };
+}
+
 exports.makeQuery = makeQuery;
 exports.makeQueries = makeQueries;
 exports.formResponse = formResponse;
 exports.Query = Query;
 exports.isEmailValid = isEmailValid;
 exports.getClient = getClient;
+exports.handlePromiseReject = handlePromiseReject;
 

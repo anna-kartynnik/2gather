@@ -5,6 +5,8 @@ const google_utils = require('./google_utils.js');
 const propose_utils = require('./propose.js');
 const sqs_utils =require('./sqs_utils.js');
 
+const moment = require('moment');
+
 
 async function deleteSQSMessage(messageReceiptHandle) {
   const deleteResponse = await sqs_utils.deleteMessage(messageReceiptHandle).catch((err) => {
@@ -41,10 +43,6 @@ exports.handler = async (event) => {
         throw err;
       });
 
-    // const meetings = await meetings_utils.getMeetingsByStatus(meetings_utils.MeetingStatus.CREATED).catch((err) => {
-    //   console.log('Could not get meetings with status created', err);
-    //   throw err;
-    // });
       console.log(meeting);
 
       if (meeting.status !== meetings_utils.MeetingStatus.CREATED) {
@@ -53,17 +51,15 @@ exports.handler = async (event) => {
         continue;
       }
 
-
-    //for (let meeting of meetings) {
-      const calendars = await meetings_utils.getMeetingParticipantsWithCalendars(
+      const userCalendars = await meetings_utils.getMeetingParticipantsWithCalendars(
         meeting.id
       ).catch((err) => {
         console.log('Could not get meetings calendars', err);
         throw err;
       });
-      console.log(calendars);
+      console.log(userCalendars);
       const response = await google_utils.getFreeBusy(
-        calendars.map((item) => {
+        userCalendars.map((item) => {
           return {id: item.calendar_id};
         }),
         meeting.preferred_time_start,
@@ -84,6 +80,19 @@ exports.handler = async (event) => {
         }
         busySlots.push(...googleCalendars[calendar_id].busy);
       }
+
+      const additionalBusySlots = await meetings_utils.getParticipantsBusySlots(userCalendars.map((u) => u.user_id)).catch((err) => {
+        console.log('Could not get participants busy slots', err);
+        throw err;
+      });
+
+      busySlots.push(...additionalBusySlots.map((bs) => {
+        const confirmedTime = moment(bs.confirmed_time).utc().milliseconds(0);
+        return {
+          start: bs.confirmed_time,
+          end: moment(confirmedTime).add(bs.duration, 'minutes')
+        };
+      }));
       
       const proposedSlots = propose_utils.getProposedSlots(
         busySlots,
@@ -108,14 +117,7 @@ exports.handler = async (event) => {
 
       //break;
     }
-
-    // console.log(JSON.stringify(meeting));
-    // return common.formResponse(201, JSON.stringify(meeting));
   } catch (err) {
     console.log('Error: ' + err);
-
-    // return common.formResponse(500, JSON.stringify({
-    //   message: err && err.message ? err.message : 'An error has occurred.'
-    // }));
   }
 };

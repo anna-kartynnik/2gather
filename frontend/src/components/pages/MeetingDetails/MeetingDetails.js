@@ -5,67 +5,168 @@ import './MeetingDetails.scss';
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import PageActions from './../../PageActions/PageActions';
+import Spinner from './../../Spinner/Spinner';
+import ProposedTimesList from './../../ProposedTimesList/ProposedTimesList';
+import MeetingQuestionList from './../../MeetingQuestionList/MeetingQuestionList';
 
 import playIcon from './../../../images/play.svg';
 
-import { getMeetingById } from './../../../services/aws/meetings';
+import { getMeetingById, MeetingStatus } from './../../../services/aws/meetings';
+
+import moment from 'moment';
 
 
 function MeetingDetails(props) {
-  const [meeting, setMeeting] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [meeting, setMeeting] = useState(null);
+  const [refresh, setRefresh] = useState(null);
   console.log(props);
   const meetingId = props.match.params.id;
 
+  const { showToast, userProfile } = props;
+
   useEffect(() => {
-    getMeetingById(meetingId).then((resp) => {
+    setIsLoading(true);
+    getMeetingById(meetingId, userProfile.awsUserProfile.id).then((resp) => {
       console.log(resp);
       setMeeting(resp.data);
+      setIsLoading(false);
     }).catch((err) => {
       console.log(err);
+      showToast(err?.message, 'danger');
+      setIsLoading(false);
     });
-  }, [meetingId]);
+  }, [meetingId, refresh]);
 
   const handlePresentationModeClick = () => {
     console.log('TODO');
   }
 
+  const handleRefresh = () => {
+    setRefresh(new Date().getTime());
+  }
+
   return (
-    <div className='meeting-details-page'>
+    <div className="meeting-details-page">
       <PageActions
-        title={meeting.name || ''}
+        title={meeting?.name || ''}
         buttonComponent={
-          <Button variant='primary' size='lg'
+          <Button variant="primary" size="lg"
             onClick={handlePresentationModeClick}>
-            <img src={playIcon} alt='play' />
+            <img src={playIcon} alt="play" className="presentation"/>
             Presentation&nbsp;mode
           </Button>
         }
       />
-      <Row className='label'>
+      { isLoading &&
+        <Spinner />
+      }
+      { !isLoading && meeting &&
+        <MeetingDetailsBody
+          meeting={meeting}
+          currentUserId={userProfile.awsUserProfile.id}
+          showToast={props.showToast}
+          handleRefresh={handleRefresh}
+        />
+      }
+      <MeetingQuestionList
+        meetingId={meetingId}
+        showToast={props.showToast}
+        userProfile={userProfile}
+      />
+    </div>
+  );
+}
+
+function MeetingTime(props) {
+  const { meeting } = props;
+  let label = '';
+  let component = null;
+  if (meeting.status === MeetingStatus.CREATED) {
+    label = 'Preferred time range';
+    component = (
+      <div>
+        {moment(meeting.preferred_time_start).format('MMM, D h:mm')}
+        &nbsp;-&nbsp;
+        {moment(meeting.preferred_time_end).format('h:mma')}
+      </div>
+    );
+  } else if (meeting.status === MeetingStatus.PROPOSED) {
+    label = 'Proposed time slots';
+    component = (
+      <ProposedTimesList
+        item={meeting}
+        currentUserId={props.currentUserId}
+        showToast={props.showToast}
+        handleRefresh={props.handleRefresh}
+      />
+    );
+  } else {
+    label = 'Meeting time';
+    component = (
+      <div>
+        {moment(meeting.confirmed_time).format('MMM, D h:mm')}
+        &nbsp;-&nbsp;
+        {moment(meeting.confirmed_time).add(meeting.duration, 'minutes').format('h:mma')}
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <Row className="label">
+        <div>{label}</div>
+      </Row>
+      <Row>
+        {component}
+      </Row>
+    </>
+  );
+}
+
+function MeetingParticipant(props) {
+  return (
+    <span>{props.value}</span>
+  );
+}
+
+function MeetingDetailsBody(props) {
+  const { meeting } = props;
+  console.log(meeting);
+  return (
+    <>
+      <Row className="label">
         <div>Description</div>
       </Row>
       <Row>
-        <div>{meeting.description}</div>
+        <div>{meeting.description || 'No description'}</div>
       </Row>
-      <Row className='label'>
+      <Row className="label">
         <div>Participants</div>
       </Row>
       <Row>
-        <div>{meeting.participants}</div>
+        <div>{
+          meeting.participants.map((p) => (
+            <MeetingParticipant
+              key={p.id}
+              value={p.email}
+            />
+          ))
+        }</div>
       </Row>
-      <Row className='label'>
-        <div>Meeting time</div>
-      </Row>
-      <Row>
-        <div>{meeting.time}</div>
-      </Row>
-      <Row className='label'>
+      <MeetingTime
+        meeting={meeting}
+        currentUserId={props.currentUserId}
+        showToast={props.showToast}
+        handleRefresh={props.handleRefresh}
+      />
+      <Row className="label">
         <div>Attachments</div>
       </Row>
       <Row>
         <div>{meeting.attachments}</div>
       </Row>
-    </div>
+    </>
   );
 }
 

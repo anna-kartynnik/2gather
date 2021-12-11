@@ -1,0 +1,17 @@
+ .questions-list {
+   h4 {
+     font-family: Sanchez;
+     width: auto;
+   }
+
+   .add-question {
+     border-radius: 50%;
+     width: auto;
+     line-height: 1em;
+     padding: 0.375rem;
+
+     .plus {
+       width: 1em;
+     }
+   }
+ }

@@ -1,7 +1,9 @@
 @import './../../../colors.scss';
 
 .meeting-details-page {
-  button img {
+  font-family: Merriweather-Regular;
+
+  button img.presentation {
     width: 1.25rem;
     margin-right: 5px;
   }

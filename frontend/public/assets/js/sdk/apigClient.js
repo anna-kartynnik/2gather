@@ -142,7 +142,7 @@ apigClientFactory.newClient = function (config) {
         
         apiGateway.core.utils.assertParametersDefined(params, paramsToQS, ['body']);
         
-        var usersGetRequest = {
+        var meetingsGetRequest = {
             verb: 'get'.toUpperCase(),
             path: pathComponent + uritemplate('/meetings').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
             headers: apiGateway.core.utils.parseParametersToObject(params, []),
@@ -151,7 +151,7 @@ apigClientFactory.newClient = function (config) {
         };
         
         
-        return apiGatewayClient.makeRequest(usersGetRequest, authType, additionalParams, config.apiKey);
+        return apiGatewayClient.makeRequest(meetingsGetRequest, authType, additionalParams, config.apiKey);
     };
     
     
@@ -290,7 +290,7 @@ apigClientFactory.newClient = function (config) {
     apigClient.meetingsIdGet = function (params, body, additionalParams) {
         if(additionalParams === undefined) { additionalParams = {}; }
         
-        apiGateway.core.utils.assertParametersDefined(params, ['id'], ['body']);
+        apiGateway.core.utils.assertParametersDefined(params, ['id', 'user_id'], ['body']);
 
         console.log(uritemplate('/meetings/{id}').expand(apiGateway.core.utils.parseParametersToObject(params, ['id'])));
         
@@ -298,7 +298,7 @@ apigClientFactory.newClient = function (config) {
             verb: 'get'.toUpperCase(),
             path: pathComponent + uritemplate('/meetings/{id}').expand(apiGateway.core.utils.parseParametersToObject(params, ['id'])),
             headers: apiGateway.core.utils.parseParametersToObject(params, []),
-            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, ['user_id']),
             body: body
         };
         
@@ -350,7 +350,7 @@ apigClientFactory.newClient = function (config) {
         
         apiGateway.core.utils.assertParametersDefined(params, ['body'], ['body']);
         
-        var usersGetRequest = {
+        var usersPostRequest = {
             verb: 'post'.toUpperCase(),
             path: pathComponent + uritemplate('/users').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
             headers: apiGateway.core.utils.parseParametersToObject(params, []),
@@ -359,7 +359,7 @@ apigClientFactory.newClient = function (config) {
         };
         
         
-        return apiGatewayClient.makeRequest(usersGetRequest, authType, additionalParams, config.apiKey);
+        return apiGatewayClient.makeRequest(usersPostRequest, authType, additionalParams, config.apiKey);
     };
     
     
@@ -378,6 +378,114 @@ apigClientFactory.newClient = function (config) {
         
         
         return apiGatewayClient.makeRequest(usersOptionsRequest, authType, additionalParams, config.apiKey);
+    };
+
+    apigClient.participantsGet = function (params, body, additionalParams) {
+        if(additionalParams === undefined) { additionalParams = {}; }
+        
+        apiGateway.core.utils.assertParametersDefined(params, ['creator_id'], ['body']);
+        
+        var participantsGetRequest = {
+            verb: 'get'.toUpperCase(),
+            path: pathComponent + uritemplate('/participants').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
+            headers: apiGateway.core.utils.parseParametersToObject(params, []),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, ['creator_id']),
+            body: body
+        };
+        
+        
+        return apiGatewayClient.makeRequest(participantsGetRequest, authType, additionalParams, config.apiKey);
+    };
+
+    apigClient.meetingsIdQuestionsGet = function (params, body, additionalParams) {
+        if(additionalParams === undefined) { additionalParams = {}; }
+        
+        apiGateway.core.utils.assertParametersDefined(params, ['id', 'user_id'], ['body']);
+        
+        var meetingsIdQuestionsGetRequest = {
+            verb: 'get'.toUpperCase(),
+            path: pathComponent + uritemplate('/meetings/{id}/questions').expand(apiGateway.core.utils.parseParametersToObject(params, ['id'])),
+            headers: apiGateway.core.utils.parseParametersToObject(params, []),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, ['user_id']),
+            body: body
+        };
+        
+        
+        return apiGatewayClient.makeRequest(meetingsIdQuestionsGetRequest, authType, additionalParams, config.apiKey);
+    };
+
+    apigClient.meetingsIdQuestionsPost = function (params, body, additionalParams) {
+        if(additionalParams === undefined) { additionalParams = {}; }
+        
+        apiGateway.core.utils.assertParametersDefined(params, ['id'], ['body']);
+        
+        var meetingsIdQuestionsPostRequest = {
+            verb: 'post'.toUpperCase(),
+            path: pathComponent + uritemplate('/meetings/{id}/questions').expand(apiGateway.core.utils.parseParametersToObject(params, ['id'])),
+            headers: apiGateway.core.utils.parseParametersToObject(params, []),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
+            body: body
+        };
+        
+        
+        return apiGatewayClient.makeRequest(meetingsIdQuestionsPostRequest, authType, additionalParams, config.apiKey);
+    };
+
+    apigClient.meetingsIdQuestionsDelete = function (params, body, additionalParams) {
+        if(additionalParams === undefined) { additionalParams = {}; }
+        
+        apiGateway.core.utils.assertParametersDefined(params, ['id', 'question_id'], ['body']);
+        
+        var meetingsIdQuestionsDeleteRequest = {
+            verb: 'delete'.toUpperCase(),
+            path: pathComponent + uritemplate('/meetings/{id}/questions/{question_id}').expand(
+                apiGateway.core.utils.parseParametersToObject(params, ['id', 'question_id'])
+            ),
+            headers: apiGateway.core.utils.parseParametersToObject(params, []),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
+            body: body
+        };
+        
+        
+        return apiGatewayClient.makeRequest(meetingsIdQuestionsDeleteRequest, authType, additionalParams, config.apiKey);
+    };
+
+    apigClient.meetingsIdQuestionIdVotesPost = function (params, body, additionalParams) {
+        if(additionalParams === undefined) { additionalParams = {}; }
+        
+        apiGateway.core.utils.assertParametersDefined(params, ['id', 'question_id'], ['body']);
+        
+        var meetingsIdQuestionIdVotesPostRequest = {
+            verb: 'post'.toUpperCase(),
+            path: pathComponent + uritemplate('/meetings/{id}/questions/{question_id}/votes').expand(
+                apiGateway.core.utils.parseParametersToObject(params, ['id', 'question_id'])
+            ),
+            headers: apiGateway.core.utils.parseParametersToObject(params, []),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
+            body: body
+        };
+        
+        
+        return apiGatewayClient.makeRequest(meetingsIdQuestionIdVotesPostRequest, authType, additionalParams, config.apiKey);
+    };
+
+    apigClient.meetingsIdQuestionIdVotesDelete = function (params, body, additionalParams) {
+        if(additionalParams === undefined) { additionalParams = {}; }
+        
+        apiGateway.core.utils.assertParametersDefined(params, ['id', 'question_id', 'vote_id'], ['body']);
+        
+        var meetingsIdQuestionIdVotesDeleteRequest = {
+            verb: 'delete'.toUpperCase(),
+            path: pathComponent + uritemplate('/meetings/{id}/questions/{question_id}/votes/{vote_id}').expand(
+                apiGateway.core.utils.parseParametersToObject(params, ['id', 'question_id', 'vote_id'])
+            ),
+            headers: apiGateway.core.utils.parseParametersToObject(params, []),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
+            body: body
+        };
+        
+        
+        return apiGatewayClient.makeRequest(meetingsIdQuestionIdVotesDeleteRequest, authType, additionalParams, config.apiKey);
     };
     
 

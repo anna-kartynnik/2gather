@@ -5,6 +5,8 @@ const MEETING_PARTICIPANTS_TABLE = 'meeting_participants';
 const USER_CALENDARS_TABLE = 'user_calendars';
 const MEETING_PROPOSED_TIMES_TABLE = 'meeting_proposed_times';
 const MEETING_PROPOSED_TIME_VOTES_TABLE = 'meeting_proposed_time_votes';
+const MEETING_QUESTIONS_TABLE = 'meeting_questions';
+const MEETING_QUESTION_VOTES_TABLE = 'meeting_question_votes';
 const USERS_TABLE = 'users';
 
 class MeetingStatus {
@@ -293,6 +295,24 @@ async function getMeetingParticipantsWithCalendars(id) {
   return result.rows;
 }
 
+async function getParticipantsBusySlots(userIds) {
+  console.log(userIds);
+  const params = [];
+  for(let i = 1; i <= userIds.length; i++) {
+    params.push('$' + i);
+  }
+  const queryValues = [];
+  queryValues.push(...userIds);
+  console.log(params);
+
+  const result = await common.makeQuery(new common.Query(
+    `SELECT m.confirmed_time, m.duration FROM ${MEETINGS_TABLE} m INNER JOIN ${MEETING_PARTICIPANTS_TABLE} mp 
+      ON m.id = mp.meeting_id WHERE mp.user_id IN (${params.join(',')}) AND m.status = '${MeetingStatus.CONFIRMED}';`,
+     queryValues
+  ));
+  return result.rows;
+}
+
 async function saveMeetingTimeSuggestion(meetingId, slots) {
   if (slots.length === 0) {
     return;
@@ -321,7 +341,7 @@ async function saveMeetingTimeSuggestion(meetingId, slots) {
 }
 
 async function createMeetingVote(params) {
-  const { proposed_time_id, user_id} = params;
+  const { proposed_time_id, user_id } = params;
   const result = await common.makeQuery(new common.Query(
     `INSERT INTO ${MEETING_PROPOSED_TIME_VOTES_TABLE} (proposed_time_id, user_id) VALUES ($1, $2);`,
     [proposed_time_id, user_id]
@@ -330,12 +350,68 @@ async function createMeetingVote(params) {
 }
 
 async function deleteMeetingVote(params) {
-  const { proposed_time_id, user_id} = params;
+  const { proposed_time_id, user_id } = params;
   const result = await common.makeQuery(new common.Query(
     `DELETE FROM ${MEETING_PROPOSED_TIME_VOTES_TABLE} WHERE proposed_time_id = $1 AND user_id = $2;`,
     [proposed_time_id, user_id]
   ));
   return result; 
+}
+
+async function getAllCommonParticipants(creatorId) {
+  // Be careful, it returns data from meeting_participants, not users table!
+  const result = await common.makeQuery(new common.Query(
+    `SELECT DISTINCT mp.user_id AS id, mp.user_email AS email FROM ${MEETING_PARTICIPANTS_TABLE} mp WHERE mp.meeting_id IN 
+      (SELECT m.id FROM ${MEETINGS_TABLE} m WHERE m.creator_id = $1);`,
+    [creatorId]
+  ));
+  return result.rows; 
+}
+
+async function getMeetingQuestions(userId, meetingId) {
+  const result = await common.makeQuery(new common.Query(
+    `SELECT mq.*, COUNT(mqv.id) AS number_of_votes, 
+      (SELECT mqv2.id FROM ${MEETING_QUESTION_VOTES_TABLE} mqv2 WHERE mqv2.user_id = $1 AND mqv2.question_id = mq.id) AS vote_id
+      FROM ${MEETING_QUESTIONS_TABLE} mq LEFT OUTER JOIN ${MEETING_QUESTION_VOTES_TABLE} mqv
+      ON mqv.question_id = mq.id WHERE mq.meeting_id = $2 GROUP BY mq.id ORDER BY number_of_votes DESC;`,
+    [userId, meetingId]
+  ));
+  return result.rows;
+}
+
+async function addQuestion(params) {
+  const { meetingId, userId, text } = params;
+  const result = await common.makeQuery(new common.Query(
+    `INSERT INTO ${MEETING_QUESTIONS_TABLE} (question_text, creator_id, meeting_id) VALUES ($1, $2, $3);`,
+    [text, userId, meetingId]
+  ));
+  return result.rows.length === 1 ? result.rows[0] : result.rows;
+}
+
+async function deleteQuestion(questionId) {
+  const result = await common.makeQuery(new common.Query(
+    `DELETE FROM ${MEETING_QUESTIONS_TABLE} WHERE id = $1;`,
+    [questionId]
+  ));
+  return result;
+}
+
+async function createQuestionVote(params) {
+  const { question_id, user_id } = params;
+  const result = await common.makeQuery(new common.Query(
+    `INSERT INTO ${MEETING_QUESTION_VOTES_TABLE} (question_id, user_id) VALUES ($1, $2);`,
+    [question_id, user_id]
+  ));
+  return result.rows.length === 1 ? result.rows[0] : result.rows;
+}
+
+async function deleteQuestionVote(params) {
+  const { vote_id } = params;
+  const result = await common.makeQuery(new common.Query(
+    `DELETE FROM ${MEETING_QUESTION_VOTES_TABLE} WHERE id = $1;`,
+    [vote_id]
+  ));
+  return result;
 }
 
 
@@ -365,3 +441,10 @@ exports.saveMeetingTimeSuggestion = saveMeetingTimeSuggestion;
 exports.createMeetingVote = createMeetingVote;
 exports.deleteMeetingVote = deleteMeetingVote;
 exports.getProposedTimes = getProposedTimes;
+exports.getParticipantsBusySlots = getParticipantsBusySlots;
+exports.getAllCommonParticipants = getAllCommonParticipants;
+exports.getMeetingQuestions = getMeetingQuestions;
+exports.addQuestion = addQuestion;
+exports.deleteQuestion = deleteQuestion;
+exports.createQuestionVote = createQuestionVote;
+exports.deleteQuestionVote = deleteQuestionVote;

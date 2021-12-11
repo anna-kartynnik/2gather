@@ -146,6 +146,7 @@ function EditMeetingDialog(props) {
         <Form.Group className='mb-3'>
           <Form.Label>Participants</Form.Label>
           <ParticipantAutoComplete
+            currentUser={props.userProfile.awsUserProfile}
             initialValue={savedMeeting.participants}
             onChange={handleParticipantsChange}
           />

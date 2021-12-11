@@ -192,7 +192,7 @@ function getProposedSlots(busySlots, preferredTimeStart, preferredTimeEnd, durat
   // console.log(intervals);
 
   // Merge intervals that "touch" each other and have identical number of overlaps.
-  const mergedIntervals = [];
+  let mergedIntervals = [];
   if (intervals.length <= 1) {
     mergedIntervals = [...intervals];
   } else {
