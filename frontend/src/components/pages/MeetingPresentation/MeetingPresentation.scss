@@ -1,0 +1,36 @@
+@import './../../../colors.scss';
+
+.meeting-presentation-container {
+  margin: 2rem auto;
+  max-width: 900px;
+  text-align: left;
+
+  &.spinner {
+    max-width: 30px;
+  }
+
+  .title {
+    font-family: Sanchez;
+    font-size: 1.5rem;
+    width: auto;
+    margin-right: auto;
+  }
+
+  img {
+    width: 1.25rem;
+  }
+
+  .question-list-item {
+    &:first-child {
+      border: 2px solid $text;
+      font-family: Merriweather-Black;
+
+      img {
+        width: 2.5rem;
+        padding: 0.5rem;
+        border: 2px solid $primary;
+        border-radius: 50%;
+      }
+    }
+  }
+}

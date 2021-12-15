@@ -306,6 +306,25 @@ apigClientFactory.newClient = function (config) {
         return apiGatewayClient.makeRequest(meetingsIdGetRequest, authType, additionalParams, config.apiKey);
     };
 
+    apigClient.meetingsIdReschedulePost = function (params, body, additionalParams) {
+        if(additionalParams === undefined) { additionalParams = {}; }
+
+        console.log(params);
+        
+        apiGateway.core.utils.assertParametersDefined(params, ['id'], ['body']);
+        
+        var meetingsIdPutRequest = {
+            verb: 'post'.toUpperCase(),
+            path: pathComponent + uritemplate('/meetings/{id}/reschedule').expand(apiGateway.core.utils.parseParametersToObject(params, ['id'])),
+            headers: apiGateway.core.utils.parseParametersToObject(params, []),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
+            body: body
+        };
+        
+        
+        return apiGatewayClient.makeRequest(meetingsIdPutRequest, authType, additionalParams, config.apiKey);
+    };
+
 
     apigClient.meetingsIdConfirmPost = function (params, body, additionalParams) {
         if(additionalParams === undefined) { additionalParams = {}; }
@@ -486,6 +505,23 @@ apigClientFactory.newClient = function (config) {
         
         
         return apiGatewayClient.makeRequest(meetingsIdQuestionIdVotesDeleteRequest, authType, additionalParams, config.apiKey);
+    };
+
+    apigClient.uploadPut = function (params, body, additionalParams) {
+        if(additionalParams === undefined) { additionalParams = {}; }
+        
+        apiGateway.core.utils.assertParametersDefined(params, ['Content-Type', 'x-amz-meta-filename'], ['body']);
+        
+        var uploadPutRequest = {
+            verb: 'put'.toUpperCase(),
+            path: pathComponent + uritemplate('/upload').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
+            headers: apiGateway.core.utils.parseParametersToObject(params, ['Content-Type', 'x-amz-meta-filename']),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
+            body: body
+        };
+        
+        
+        return apiGatewayClient.makeRequest(uploadPutRequest, authType, additionalParams, config.apiKey);
     };
     
 

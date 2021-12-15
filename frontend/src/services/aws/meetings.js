@@ -2,83 +2,14 @@ import { getAPIGatewaySDK } from './sdkUtil';
 
 import moment from 'moment';
 
-// const LIST_ITEMS = [{
-//   id: 'id1',
-//   name: 'Stand-up meeting',
-//   description: 'Description 1',
-//   participants: [],
-//   time: moment().format('YYYY-MM-DD[T]HH:mm'),
-//   note: 'Starts in 15 min',
-//   pills: [{
-//     text: 'quick: 15 min',
-//     color: 'success'
-//   }],
-//   is_confirmed: true,
-//   // [TODO] remove next property
-//   is_creator: true,
-//   creator_id: 'bb222faf-a07b-065a-b158-cf2c15277963',
-//   proposed_times: []
-// }, {
-//   id: 'id2',
-//   name: 'Discussion Group',
-//   description: 'Description 2',
-//   participants: [],
-//   note: 'Proposed time: 4pm',
-//   pills: [{
-//     text: 'long: 1 hour',
-//     color: 'warning'
-//   }],
-//   is_confirmed: false,
-//   proposed_times: [
-//     {
-//       id: 'id1',
-//       proposed_time: {
-//         start: moment().format('YYYY-MM-DD[T]HH:mm'),
-//         end: moment().add(1, 'hour').format('YYYY-MM-DD[T]HH:mm')
-//       },
-//       number_of_votes: 1
-//     }, {
-//       id: 'id2',
-//       proposed_time: {
-//         start: moment('2021-12-03').format('YYYY-MM-DD[T]HH:mm'),
-//         end: moment('2021-12-03').add(1, 'hour').format('YYYY-MM-DD[T]HH:mm')
-//       },
-//       number_of_votes: 3
-//     }, {
-//       id: 'id3',
-//       proposed_time: {
-//         start: moment('2021-12-04').format('YYYY-MM-DD[T]HH:mm'),
-//         end: moment('2021-12-04').add(1, 'hour').format('YYYY-MM-DD[T]HH:mm')
-//       },
-//       number_of_votes: 10
-//     }
-//   ],
-//   proposed_option_number: 1,
-//   proposed_options_total: 2,
-//   proposed_option_accepted: true,
-//   creator_id: 'bb222faf-a07b-065a-b158-cf2c15277962'
-// }, {
-//   id: 'id2',
-//   name: 'Discussion Group',
-//   description: 'Description 2',
-//   participants: [],
-//   note: 'Proposed time: 5pm',
-//   pills: [{
-//     text: 'long: 1 hour',
-//     color: 'warning'
-//   }],
-//   is_confirmed: false,
-//   proposed_option_number: 2,
-//   proposed_options_total: 2,
-//   proposed_option_accepted: false,
-//   creator_id: 'bb222faf-a07b-065a-b158-cf2c15277962',
-//   proposed_times: []
-// }];
+
+export const ATTACHMENTS_BUCKET_NAME = '2gather-meeting-attachments';
 
 export class MeetingStatus {
   static CREATED = 'created';
   static PROPOSED = 'proposed';
   static CONFIRMED = 'confirmed';
+  static DELETED = 'deleted';
 }
 
 function getNote(meetingFromDB) {
@@ -168,7 +99,9 @@ export function getAgendaList(userId, status) {
         meetingsMap[meeting.id].push(meeting);
       }
       const meetings = resp.data.map((meeting) => {
-        return expandMeeting(meeting, userId, meetingsMap);
+        const m = expandMeeting(meeting, userId, meetingsMap);
+        m.proposed_times = meetingsMap[meeting.id];
+        return m;
       });
       console.log(meetings);
       meetings.sort((a, b) => {
@@ -201,7 +134,8 @@ export async function createMeeting(meeting) {
       participants: getParticipantsForBackend(meeting.participants),
       preferred_time_start: meeting.preferredTimeStart,
       preferred_time_end: meeting.preferredTimeEnd,
-      duration: meeting.duration
+      duration: meeting.duration,
+      attachments: meeting.attachments
     });
   });
 }
@@ -361,14 +295,52 @@ export function deleteQuestion(meetingId, questionId) {
 
 export async function saveQuestionVote(meetingId, questionId, userId, voteId) {
   return getAPIGatewaySDK().then((sdk) => {
-    const func = voteId === null ? sdk.meetingsIdQuestionIdVotesPost : sdk.meetingsIdQuestionIdVotesDelete;
-    return func({
-      id: meetingId,
-      question_id: questionId
+    if (voteId === null) {
+      return sdk.meetingsIdQuestionIdVotesPost({
+        id: meetingId,
+        question_id: questionId
+      }, {
+        id: meetingId,
+        question_id: questionId,
+        user_id: userId
+      });
+    } else {
+      return sdk.meetingsIdQuestionIdVotesDelete({
+        id: meetingId,
+        question_id: questionId,
+        vote_id: voteId
+      }, {
+        id: meetingId,
+        question_id: questionId,
+        vote_id: voteId,
+        user_id: userId
+      });
+    }
+  });
+}
+
+export async function uploadAttachmentPut(attachment, attachmentKey) {
+  return getAPIGatewaySDK().then((sdk) => {
+    return sdk.uploadPut(
+      {
+        'Content-Type': attachment.type,
+        'x-amz-meta-filename': attachmentKey,
+      },
+      attachment,
+      {}
+    );
+  });
+}
+
+export async function rescheduleMeeting(meeting) {
+  return getAPIGatewaySDK().then((sdk) => {
+    return sdk.meetingsIdReschedulePost({
+      id: meeting.id
     }, {
-      id: meetingId,
-      question_id: questionId,
-      user_id: userId
+      id: meeting.id,
+      preferred_time_start: meeting.preferredTimeStart,
+      preferred_time_end: meeting.preferredTimeEnd,
+      duration: meeting.duration
     });
   });
 }

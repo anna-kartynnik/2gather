@@ -5,6 +5,7 @@ import './LogoutAction.scss';
 import { useGoogleLogout } from 'react-google-login';
 import { deleteUserProfile } from './../../services/utils/userUtils';
 import { deleteToken } from './../../services/utils/tokenUtils';
+import { clearAPIGatewaySDK } from './../../services/aws/sdkUtil';
 
 import logout from './../../images/logout.svg';
 
@@ -19,6 +20,7 @@ function LogoutAction(props) {
     //deleteUserProfile();
     props.setToken({});
     props.deleteUserProfile();
+    clearAPIGatewaySDK();
     //deleteUserProfile();
   };
 

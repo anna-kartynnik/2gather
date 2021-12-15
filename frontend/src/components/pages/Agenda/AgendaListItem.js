@@ -43,6 +43,7 @@ function AgendaListItem(props) {
             handleDelete={props.handleDelete}
             handleEdit={props.handleEdit}
             handleConfirm={props.handleConfirm}
+            handleReschedule={props.handleReschedule}
           />
         }
         { !props.item.is_creator &&

@@ -39,12 +39,15 @@ apiGateway.core.sigV4ClientFactory.newClient = function (config) {
     }
 
     function buildCanonicalRequest(method, path, queryParams, headers, payload) {
+        console.log(headers);
+        console.log(!headers['Content-Type'] || headers['Content-Type'] === 'application/json');
         return method + '\n' +
             buildCanonicalUri(path) + '\n' +
             buildCanonicalQueryString(queryParams) + '\n' +
             buildCanonicalHeaders(headers) + '\n' +
             buildCanonicalSignedHeaders(headers) + '\n' +
-            hexEncode(hash(payload));
+            //hexEncode(hash(payload));
+            (!headers['Content-Type'] || headers['Content-Type'] === 'application/json' ? hexEncode(hash(payload)) : '');
     }
 
     function hashCanonicalRequest(request) {
@@ -165,10 +168,13 @@ apiGateway.core.sigV4ClientFactory.newClient = function (config) {
             headers['Accept'] = config.defaultAcceptType;
         }
 
-        var body = apiGateway.core.utils.copy(request.body);
+        console.log(headers['Content-Type']);
+
+        //var body = apiGateway.core.utils.copy(request.body);
+        var body = request.body; //apiGateway.core.utils.copy(request.body);
         if (body === undefined || verb === 'GET') { // override request body and set to empty when signing GET requests
             body = '';
-        }  else {
+        } else if (headers['Content-Type'] === 'application/json') {
             body = JSON.stringify(body);
         }
 
@@ -212,6 +218,7 @@ apiGateway.core.sigV4ClientFactory.newClient = function (config) {
             headers: headers,
             data: body
         };
+        console.log(signedRequest);
         return axios(signedRequest);
     };
 

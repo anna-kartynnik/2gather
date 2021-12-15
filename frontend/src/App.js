@@ -9,6 +9,7 @@ import PageLayout from './components/layout/PageLayout';
 import Agenda from './components/pages/Agenda/Agenda';
 import Pending from './components/pages/Pending/Pending';
 import MeetingDetails from './components/pages/MeetingDetails/MeetingDetails';
+import MeetingPresentation from './components/pages/MeetingPresentation/MeetingPresentation';
 import Login from './components/pages/Login/Login';
 import Profile from './components/pages/Profile/Profile';
 import Toast from './components/Toast/Toast';
@@ -16,7 +17,7 @@ import CalendarsDialog from './components/CalendarsDialog/CalendarsDialog';
 
 import useToken from './hooks/useToken';
 import useUserProfile from './hooks/useUserProfile';
-import {MeetingStatus} from './services/aws/meetings';
+import { MeetingStatus } from './services/aws/meetings';
 
 
 function App(props) {
@@ -68,33 +69,45 @@ function App(props) {
       <div className="page-content">
 
         <Switch>
-          <Route path='/' exact>
+          <Route path="/" exact>
             <Agenda
               userProfile={userProfile}
               showToast={showToast}
             />
           </Route>
-          <Route path='/pending'>
+          <Route path="/pending">
             <Pending
               userProfile={userProfile}
               showToast={showToast}
             />
           </Route>
-          <Route path='/created'>
+          <Route path="/created">
             <Agenda
               status={MeetingStatus.CREATED}
               userProfile={userProfile}
               showToast={showToast}
             />
           </Route>
-          <Route path='/profile'>
+          <Route path="/profile">
             <Profile
               userProfile={userProfile}
               showToast={showToast}
             />
           </Route>
-          <Route path='/meetings/:id'>
+          <Route exact path="/meetings/:id">
             <MeetingDetailsWithRouter
+              userProfile={userProfile}
+              showToast={showToast}
+            />
+          </Route>
+          <Route exact path="/meetings/:id/present">
+            <MeetingPresentationWithRouter
+              userProfile={userProfile}
+              showToast={showToast}
+            />
+          </Route>
+          <Route exact path="/meetings/:id/present/:question_id">
+            <MeetingPresentationWithRouter
               userProfile={userProfile}
               showToast={showToast}
             />
@@ -117,5 +130,6 @@ function App(props) {
 }
 
 const MeetingDetailsWithRouter = withRouter(MeetingDetails);
+const MeetingPresentationWithRouter = withRouter(MeetingPresentation);
 
 export default App;

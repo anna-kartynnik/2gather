@@ -6,8 +6,8 @@ import Button from 'react-bootstrap/Button';
 import Badge from 'react-bootstrap/Badge';
 import Spinner from './../Spinner/Spinner';
 
+import thumbUpGrayIcon from './../../images/thumb-up-gray.svg';
 import thumbUpIcon from './../../images/thumb-up.svg';
-import thumbDownIcon from './../../images/thumb-down.svg';
 import deleteIcon from './../../images/delete.svg';
 
 import { saveQuestionVote } from './../../services/aws/meetings';
@@ -32,7 +32,7 @@ export default function QuestionListItemActions(props) {
     });
   };
 
-  const handleDislike = () => {
+  const handleRemoveLike = () => {
     // TODO
     saveQuestionVote(props.meetingId, props.item.id, props.currentUserId, props.voteId).then((resp) => {
       console.log(resp);
@@ -57,17 +57,17 @@ export default function QuestionListItemActions(props) {
           className="ms-auto"
           onClick={handleLike}>
           <div className="like-container">
-            <img src={thumbUpIcon} alt="Like" />
+            <img src={thumbUpGrayIcon} alt="Like" />
             <Badge pill bg="success">{props.item.number_of_votes}</Badge>
           </div>
         </Button>
       }
       { !isLoading && props.voteId &&
-        <Button variant="link" title="Like"
+        <Button variant="link" title="Remove like"
           className="ms-auto"
-          onClick={handleDislike}>
+          onClick={handleRemoveLike}>
           <div className="like-container">
-            <img src={thumbDownIcon} alt="Dislike" />
+            <img src={thumbUpIcon} alt="Remove like" />
             <Badge pill bg="success">{props.item.number_of_votes}</Badge>
           </div>
         </Button>

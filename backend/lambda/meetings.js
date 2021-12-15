@@ -7,6 +7,7 @@ const MEETING_PROPOSED_TIMES_TABLE = 'meeting_proposed_times';
 const MEETING_PROPOSED_TIME_VOTES_TABLE = 'meeting_proposed_time_votes';
 const MEETING_QUESTIONS_TABLE = 'meeting_questions';
 const MEETING_QUESTION_VOTES_TABLE = 'meeting_question_votes';
+const MEETING_ATTACHMENTS_TABLE = 'meeting_attachments';
 const USERS_TABLE = 'users';
 
 class MeetingStatus {
@@ -16,7 +17,7 @@ class MeetingStatus {
 }
 
 
-async function createMeeting(meeting) {
+async function createMeeting(meeting, oldMeeting) {
   // [TODO] make a helpful method in common?
   const client = await common.getClient();
   let meetingId = null;
@@ -60,6 +61,26 @@ async function createMeeting(meeting) {
     participantsQueryText += ';';
 
     await client.query(participantsQueryText, participantsQueryValues);
+
+    if (meeting.attachments && meeting.attachments.length > 0) {
+      let attachmentsQueryText = `INSERT INTO ${MEETING_ATTACHMENTS_TABLE} (meeting_id, bucket, object_key) VALUES `;
+      const attachmentsQueryValues = [meetingId];
+      for (let attachment of meeting.attachments) {
+        const paramIndex = attachmentsQueryValues.length + 1;
+        attachmentsQueryText += `($1, $${paramIndex}, $${paramIndex + 1}),`;
+        attachmentsQueryValues.push(attachment.bucket);
+        attachmentsQueryValues.push(attachment.object_key);
+      }
+
+      attachmentsQueryText = attachmentsQueryText.substring(0, attachmentsQueryText.length - 1);
+      attachmentsQueryText += ';';
+
+      await client.query(attachmentsQueryText, attachmentsQueryValues);
+    }
+
+    if (oldMeeting && oldMeeting.id) {
+      await client.query(`UPDATE ${MEETINGS_TABLE} SET status = 'deleted' WHERE id = $1;`, [oldMeeting.id]);
+    }
 
     await client.query('COMMIT');
   } catch (err) {
@@ -245,7 +266,7 @@ async function getProposedTimes(userId, ids) {
       `FROM ${MEETING_PROPOSED_TIMES_TABLE} mpt LEFT OUTER JOIN ${MEETING_PROPOSED_TIME_VOTES_TABLE} mptv ` +
       `ON mpt.id = mptv.proposed_time_id ` +
       `WHERE mpt.meeting_id IN (${params.join(',')}) ` +
-      `GROUP BY mpt.id;`,
+      `GROUP BY mpt.id ORDER BY mpt.proposed_time;`,
     queryValues
   ));
   return result.rows; 
@@ -270,7 +291,18 @@ async function getMeetingById(id) {
 async function getMeetingParticipants(id) {
   const result = await common.makeQuery(new common.Query(
     `SELECT u.* FROM ${USERS_TABLE} u INNER JOIN ${MEETING_PARTICIPANTS_TABLE} mp ON u.id = mp.user_id
-       WHERE mp.meeting_id = $1;`,
+      WHERE mp.meeting_id = $1
+    UNION
+    SELECT mp.user_id AS id, mp.user_email AS email FROM ${MEETING_PARTICIPANTS_TABLE} mp
+      WHERE mp.meeting_id = $1 AND mp.user_id IS NULL;`,
+     [id]
+  ));
+  return result.rows;
+}
+
+async function getMeetingAttachments(id) {
+  const result = await common.makeQuery(new common.Query(
+    `SELECT * FROM ${MEETING_ATTACHMENTS_TABLE} WHERE meeting_id = $1;`,
      [id]
   ));
   return result.rows;
@@ -414,6 +446,32 @@ async function deleteQuestionVote(params) {
   return result;
 }
 
+async function rescheduleMeeting(id, params) {
+  const refMeeting = await getMeetingById(id);
+
+  const newMeeting = {
+    name: refMeeting.name,
+    description: refMeeting.description,
+    preferred_time_start: params.preferred_time_start,
+    preferred_time_end: params.preferred_time_end,
+    duration: params.duration,
+    creator_id: refMeeting.creator_id
+  };
+
+  const participants = await getMeetingParticipants(id);
+  newMeeting.participants = participants.map((p) => {
+    return (p.id) ? p.id : `email:${p.email}`;
+  });
+
+  const attachments = await getMeetingAttachments(id);
+  newMeeting.attachments = attachments;
+
+  const saved = await createMeeting(newMeeting, refMeeting);
+  newMeeting.id = saved.id;
+
+  return newMeeting;
+}
+
 
 
 // async function getMeetingsCalendars(ids) {
@@ -434,6 +492,7 @@ exports.deleteMeeting = deleteMeeting;
 exports.getMeetingsByParticipant = getMeetingsByParticipant;
 exports.getMeetingsByStatus = getMeetingsByStatus;
 exports.getMeetingById = getMeetingById;
+exports.getMeetingAttachments = getMeetingAttachments;
 exports.getMeetingParticipants = getMeetingParticipants;
 exports.getMeetingParticipantsWithoutId = getMeetingParticipantsWithoutId;
 exports.getMeetingParticipantsWithCalendars = getMeetingParticipantsWithCalendars;
@@ -448,3 +507,4 @@ exports.addQuestion = addQuestion;
 exports.deleteQuestion = deleteQuestion;
 exports.createQuestionVote = createQuestionVote;
 exports.deleteQuestionVote = deleteQuestionVote;
+exports.rescheduleMeeting = rescheduleMeeting;

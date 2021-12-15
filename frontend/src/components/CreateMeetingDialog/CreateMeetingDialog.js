@@ -11,7 +11,7 @@ import DurationInput from './../DurationInput/DurationInput';
 import ParticipantAutoComplete from './../ParticipantAutoComplete/ParticipantAutoComplete';
 import Spinner from './../Spinner/Spinner';
 
-import { createMeeting } from './../../services/aws/meetings';
+import { createMeeting, uploadAttachmentPut, ATTACHMENTS_BUCKET_NAME } from './../../services/aws/meetings';
 import moment from 'moment';
 
 
@@ -21,6 +21,7 @@ function CreateMeetingDialog(props) {
   const [participants, setParticipants] = useState([props.userProfile.awsUserProfile]);
   const [preferredTimeRange, setPreferredTimeRange] = useState([]);  // moment objects
   const [duration, setDuration] = useState(60);
+  const [attachments, setAttachments] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [invalid, setInvalid] = useState({});
 
@@ -83,7 +84,8 @@ function CreateMeetingDialog(props) {
       preferredTimeStart: preferredTimeRange[0].toISOString(),
       preferredTimeEnd: preferredTimeRange[1].toISOString(),
       duration,
-      creatorId: props.userProfile.awsUserProfile.id
+      creatorId: props.userProfile.awsUserProfile.id,
+      attachments: attachments
     }).then((resp) => {
       setIsLoading(false);
       props.showToast(
@@ -100,6 +102,31 @@ function CreateMeetingDialog(props) {
         //'middle-center'
       );
     });
+  };
+
+  const handleFileChange = (evt) => {
+    if (evt.target && evt.target.files) {
+      //setSelectedPhoto(evt.target.files[0]);
+      const attachment = evt.target.files[0];
+      const attachmentKey = encodeURIComponent(`${new Date().getTime()}-${attachment.name}`);
+      uploadAttachmentPut(attachment, attachmentKey).then((response) => {
+        console.log(response);
+        setAttachments([{
+          bucket: ATTACHMENTS_BUCKET_NAME,
+          object_key: attachmentKey
+        }]);
+        //handleClose();
+        //props.onSuccess();
+      })
+      .catch((err) => {
+        console.log('an error occurred while uploading the file', err);
+        setIsLoading(false);
+        props.showToast(
+          err?.message,
+          'danger'
+        );
+      });
+    }
   };
 
   return (
@@ -174,10 +201,14 @@ function CreateMeetingDialog(props) {
               </div>
             }
           </Form.Group>
-          {/*<Form.Group controlId='formFile' className='mb-3'>
+          <Form.Group controlId='formFile' className='mb-3'>
             <Form.Label>Attachments</Form.Label>
-            <Form.Control type='file' />
-          </Form.Group>*/}
+            <Form.Control
+              type="file"
+              name="file"
+              onChange={handleFileChange}
+            />
+          </Form.Group>
         </Form>
       </Modal.Body>
       <Modal.Footer>

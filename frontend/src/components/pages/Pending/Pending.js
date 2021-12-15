@@ -8,6 +8,7 @@ import CreateMeetingDialog from './../../CreateMeetingDialog/CreateMeetingDialog
 import EditMeetingDialog from './../../EditMeetingDialog/EditMeetingDialog';
 import DeleteMeetingDialog from './../../DeleteMeetingDialog/DeleteMeetingDialog';
 import ConfirmMeetingTimeDialog from './../../ConfirmMeetingTimeDialog/ConfirmMeetingTimeDialog';
+import RescheduleDialog from './../../RescheduleDialog/RescheduleDialog';
 import PendingList from './PendingList';
 
 import { getPendingAgendaList } from './../../../services/aws/meetings';
@@ -19,11 +20,13 @@ function Pending(props) {
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [showRescheduleDialog, setShowRescheduleDialog] = useState(false);
   const [listItems, setListItems] = useState([]);
   const [refresh, setRefresh] = useState(new Date().getTime());
   const [meetingToDelete, setMeetingToDelete] = useState(null);
   const [meetingToEdit, setMeetingToEdit] = useState(null);
   const [meetingToConfirm, setMeetingToConfirm] = useState(null);
+  const [meetingToReschedule, setMeetingToReschedule] = useState(null);
 
   const { userProfile, showToast } = props;
 
@@ -110,6 +113,22 @@ function Pending(props) {
     setMeetingToConfirm(null);
   };
 
+  const handleReschedule = (meeting) => () => {
+    setMeetingToReschedule(meeting);
+    setShowRescheduleDialog(true);
+  };
+
+  const handleCloseRescheduleDialog = () => {
+    setShowRescheduleDialog(false);
+    setMeetingToReschedule(null);
+  };
+
+  const handleRescheduleDialogCloseAndRefresh = () => {
+    setShowRescheduleDialog(false);
+    setRefresh(new Date().getTime());
+    setMeetingToReschedule(null);
+  };
+
   return (
     <>
       <PageActions
@@ -130,6 +149,7 @@ function Pending(props) {
         handleConfirm={handleConfirm}
         showToast={props.showToast}
         handleRefresh={handleRefresh}
+        handleReschedule={handleReschedule}
       />
       { showCreateDialog &&
         <CreateMeetingDialog
@@ -158,6 +178,16 @@ function Pending(props) {
           showToast={props.showToast}
           meeting={meetingToConfirm}
           //userProfile={props.userProfile}
+        />
+      }
+      { showRescheduleDialog &&
+        <RescheduleDialog
+          showDialog={showRescheduleDialog}
+          onClose={handleCloseRescheduleDialog}
+          onCloseAndRefresh={handleRescheduleDialogCloseAndRefresh}
+          showToast={props.showToast}
+          meetingId={meetingToReschedule.id}
+          userId={props.userProfile.awsUserProfile.id}
         />
       }
       { showDeleteDialog &&

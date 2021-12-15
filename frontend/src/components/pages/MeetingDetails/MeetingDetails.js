@@ -4,6 +4,7 @@ import './MeetingDetails.scss';
 
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
+import { Link } from 'react-router-dom';
 import PageActions from './../../PageActions/PageActions';
 import Spinner from './../../Spinner/Spinner';
 import ProposedTimesList from './../../ProposedTimesList/ProposedTimesList';
@@ -22,6 +23,7 @@ function MeetingDetails(props) {
   const [refresh, setRefresh] = useState(null);
   console.log(props);
   const meetingId = props.match.params.id;
+  const presentationPath = `/meetings/${meetingId}/present`;
 
   const { showToast, userProfile } = props;
 
@@ -51,8 +53,8 @@ function MeetingDetails(props) {
       <PageActions
         title={meeting?.name || ''}
         buttonComponent={
-          <Button variant="primary" size="lg"
-            onClick={handlePresentationModeClick}>
+          <Button variant="primary" size="lg" as={Link} to={presentationPath}>
+            {/*onClick={handlePresentationModeClick}>*/}
             <img src={playIcon} alt="play" className="presentation"/>
             Presentation&nbsp;mode
           </Button>
@@ -126,7 +128,7 @@ function MeetingTime(props) {
 
 function MeetingParticipant(props) {
   return (
-    <span>{props.value}</span>
+    <span className="mx-1">{props.value}</span>
   );
 }
 
@@ -164,7 +166,16 @@ function MeetingDetailsBody(props) {
         <div>Attachments</div>
       </Row>
       <Row>
-        <div>{meeting.attachments}</div>
+        <div>{meeting.attachments.map((attachment) => {
+          const nameParts = attachment.object_key.split('-');
+          let name = '';
+          for (let i = 1; i < nameParts.length; i++) {
+            name += nameParts[i];
+          }
+          return (
+            <a key={attachment.id} href={attachment.url} target="_blank noopener noreferrer">{name}</a>
+          );
+        })}</div>
       </Row>
     </>
   );

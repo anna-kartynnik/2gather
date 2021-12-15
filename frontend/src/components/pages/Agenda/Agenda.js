@@ -10,6 +10,7 @@ import CreateMeetingDialog from './../../CreateMeetingDialog/CreateMeetingDialog
 import EditMeetingDialog from './../../EditMeetingDialog/EditMeetingDialog';
 import DeleteMeetingDialog from './../../DeleteMeetingDialog/DeleteMeetingDialog';
 import ConfirmMeetingTimeDialog from './../../ConfirmMeetingTimeDialog/ConfirmMeetingTimeDialog';
+import RescheduleDialog from './../../RescheduleDialog/RescheduleDialog';
 
 import { getAgendaList, getConfirmedAgendaList, MeetingStatus } from './../../../services/aws/meetings';
 
@@ -21,11 +22,13 @@ function Agenda(props) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [showRescheduleDialog, setShowRescheduleDialog] = useState(false);
   const [listItems, setListItems] = useState([]);
   const [refresh, setRefresh] = useState(new Date().getTime());
   const [meetingToDelete, setMeetingToDelete] = useState(null);
   const [meetingToEdit, setMeetingToEdit] = useState(null);
   const [meetingToConfirm, setMeetingToConfirm] = useState(null);
+  const [meetingToReschedule, setMeetingToReschedule] = useState(null);
 
   const { userProfile, status, showToast } = props;
 
@@ -113,6 +116,22 @@ function Agenda(props) {
     setMeetingToConfirm(null);
   };
 
+  const handleReschedule = (meeting) => () => {
+    setMeetingToReschedule(meeting);
+    setShowRescheduleDialog(true);
+  };
+
+  const handleCloseRescheduleDialog = () => {
+    setShowRescheduleDialog(false);
+    setMeetingToReschedule(null);
+  };
+
+  const handleRescheduleDialogCloseAndRefresh = () => {
+    setShowRescheduleDialog(false);
+    setRefresh(new Date().getTime());
+    setMeetingToReschedule(null);
+  };
+
   return (
     <>
       <PageActions
@@ -140,6 +159,7 @@ function Agenda(props) {
         handleDelete={handleDelete}
         handleEdit={handleEdit}
         handleConfirm={handleConfirm}
+        handleReschedule={handleReschedule}
       />
       { showCreateDialog &&
         <CreateMeetingDialog
@@ -168,6 +188,16 @@ function Agenda(props) {
           showToast={props.showToast}
           meeting={meetingToConfirm}
           //userProfile={props.userProfile}
+        />
+      }
+      { showRescheduleDialog &&
+        <RescheduleDialog
+          showDialog={showRescheduleDialog}
+          onClose={handleCloseRescheduleDialog}
+          onCloseAndRefresh={handleRescheduleDialogCloseAndRefresh}
+          showToast={props.showToast}
+          meetingId={meetingToReschedule.id}
+          userId={props.userProfile.awsUserProfile.id}
         />
       }
       { showDeleteDialog &&

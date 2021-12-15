@@ -59,7 +59,7 @@ apiGateway.core.simpleHttpClientFactory.newClient = function (config) {
             headers['Accept'] = config.defaultAcceptType;
         }
 
-        var body = apiGateway.core.utils.copy(request.body);
+        var body = request.body;//apiGateway.core.utils.copy(request.body);
         if (body === undefined) {
             body = '';
         }

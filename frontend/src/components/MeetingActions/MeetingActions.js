@@ -29,7 +29,8 @@ export function MeetingListItemCreatorActions(props) {
         onClick={props.handleEdit(props.item)}>
         <img src={editIcon} alt="Edit" />
       </Button>
-      <Button variant="link" title="Reschedule">
+      <Button variant="link" title="Reschedule"
+        onClick={props.handleReschedule(props.item)}>
         <img src={rescheduleIcon} alt="Reschedule" />
       </Button>
       <Button variant="link" title="Delete" onClick={props.handleDelete(props.item)}>

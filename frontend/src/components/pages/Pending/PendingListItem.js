@@ -57,6 +57,7 @@ function PendingListItem(props) {
             handleDelete={props.handleDelete}
             handleEdit={props.handleEdit}
             handleConfirm={props.handleConfirm}
+            handleReschedule={props.handleReschedule}
           />
         }
         { props.item.creator_id !== props.currentUserId &&
