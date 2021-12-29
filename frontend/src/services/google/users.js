@@ -1,3 +1,4 @@
+import moment from "moment";
 import { getToken, deleteToken } from './../utils/tokenUtils';
 
 const axios = require('axios');
@@ -54,8 +55,23 @@ export async function givePermissionsToCalendar(calendarId) {
         }
       }
     }).then((resp) => {
-      // save to our db
-      console.log('saving to db');
+      return testAsync();
+    })
+  );
+}
+
+export async function getEvents(calendarId) {
+  return await handleRequest((token) =>
+    axios({
+      method: 'get',
+      url: `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events?access_token=${token}`,
+      data: {
+        calendarId: calendarId,
+        timeMin: moment().toISOString(),
+        timeMax: moment().add(7, 'days').toISOString(),
+        singleEvents: true
+      }
+    }).then((resp) => {
       return testAsync();
     })
   );

@@ -7,6 +7,8 @@ const sqs_utils =require('./sqs_utils.js');
 
 const moment = require('moment');
 
+const CONFIRMED_QUEUE_URL = process.env.CONFIRMED_QUEUE_URL;
+
 
 async function deleteSQSMessage(messageReceiptHandle) {
   const deleteResponse = await sqs_utils.deleteMessage(messageReceiptHandle).catch((err) => {
@@ -69,9 +71,15 @@ exports.handler = async (event) => {
         throw err;
       });
       console.log(response);
-      const googleCalendars = response.data.calendars;
-      
-      const busySlots = [];
+
+      const busySlots = response.holidays.data.items.map((event) => {
+        return {
+          start: event.start.date,
+          end: event.end.date
+        };
+      });
+
+      const googleCalendars = response.freebusy.data.calendars;
       for (let calendar_id of Object.keys(googleCalendars)) {
         console.log(googleCalendars[calendar_id]);
         if (googleCalendars[calendar_id].errors) {
@@ -81,6 +89,7 @@ exports.handler = async (event) => {
         busySlots.push(...googleCalendars[calendar_id].busy);
       }
 
+      // Should be obsolete since google calendars should have all the meetings now.
       const additionalBusySlots = await meetings_utils.getParticipantsBusySlots(userCalendars.map((u) => u.user_id)).catch((err) => {
         console.log('Could not get participants busy slots', err);
         throw err;
@@ -93,29 +102,30 @@ exports.handler = async (event) => {
           end: moment(confirmedTime).add(bs.duration, 'minutes')
         };
       }));
-      
-      const proposedSlots = propose_utils.getProposedSlots(
+      console.log(busySlots);
+
+      const proposedSlotObjects = propose_utils.getProposedSlots(
         busySlots,
         meeting.preferred_time_start,
         meeting.preferred_time_end,
         meeting.duration,
-        [8]// in hours, so here +08:00, participantsTimeZones [TODO] !!!
+        [-8]// in hours, so here -08:00, participantsTimeZones
       );
-      
+
+      const proposedSlots = proposedSlotObjects.map((slot) => moment(slot.start).utc().toISOString());
+      console.log(proposedSlots);
+
       // save proposed slots and change meeting status to 'proposed'
-      const saveResult = await meetings_utils.saveMeetingTimeSuggestion(meeting.id, proposedSlots);
+      const saveResult = await meetings_utils.saveMeetingTimeSuggestions(meeting, proposedSlots);
       console.log(saveResult);
 
-      const participantsWithoutId = await meetings_utils.getMeetingParticipantsWithoutId(meeting.id).catch((err) => {
-        console.log(`Could not get participants without id for meeting with id ${meeting.id}`, err);
-        // Ignore?
-      });
-
-      // [TODO] send emails to participants without id but with email.
+      if (meeting.scheduling_mode === meetings_utils.MeetingSchedulingMode.WITHOUT_VOTES) {
+        const sqsResponse = await sqs_utils.sendMessage(meeting, CONFIRMED_QUEUE_URL)
+          .catch(common.handlePromiseReject('Could not send message to confirmed queue'));
+      }
 
       await deleteSQSMessage(messageReceiptHandle);
 
-      //break;
     }
   } catch (err) {
     console.log('Error: ' + err);

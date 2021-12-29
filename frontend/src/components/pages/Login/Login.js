@@ -7,7 +7,7 @@ import Row from 'react-bootstrap/Row';
 import Button from 'react-bootstrap/Button';
 import { useGoogleLogin } from 'react-google-login';
 import { refreshTokenSetup } from './../../../services/utils/tokenUtils';
-import { loginToAWS/*, refreshAWSToken*/ } from './../../../services/aws/login';
+import { loginToAWS, refreshAWSToken } from './../../../services/aws/login';
 import { getUser, createUser } from './../../../services/aws/users';
 import { getUserProfile } from './../../../services/google/users';
 
@@ -27,6 +27,7 @@ function Login(props) {
     let redirectTo = '/';
 
     refreshTokenSetup(resp, props.setToken/*, refreshAWSToken*/);
+    refreshAWSToken(resp.id_token);
     loginToAWS(resp.tokenObj).then(() => {
       console.log('aws login ok');
       return getUserProfile();
@@ -36,27 +37,7 @@ function Login(props) {
       return getUser(userEmail);
     }).then((awsUserResponse) => {
       console.log(awsUserResponse);
-      console.log(userEmail);
-      console.log(awsUserResponse.status === 400);
-      console.log(awsUserResponse.data.message);
-      console.log(awsUserResponse.data.message === 'User not found');
-
-    //   // if (awsUserResponse.status === 400 && awsUserResponse.data.message &&
-    //   //   awsUserResponse.data.message === 'User not found') {
-    //   //   console.log('creating user');
-    //   //   return createUser(userEmail);
-    //   // } else {
-    //   //  return new Promise().resolve(awsUserResponse);
-    //   //}
-    // // }).then((awsUserResponse) => {
-    //   //props.setUserProfile.setAWSUserProfile(awsUserResponse.id);
-    //   //props.setRedirectTo(true);
-      
-      //return Promise.resolve(awsUserResponse);
-
-      console.log(awsUserResponse);
       props.setUserProfile.setAWSUserProfile(awsUserResponse.data);
-      //props.setRedirectTo(redirectTo);
     }).catch((err) => {
       console.log(err);
       if (err.status === 400 && err.data.message &&
@@ -66,22 +47,13 @@ function Login(props) {
         return createUser(userEmail).then((awsUserResponse) => {
           console.log(awsUserResponse);
           props.setUserProfile.setAWSUserProfile(awsUserResponse.data);
-          //setAwsUserProfile(awsUserResponse);
-          //handleNewUserCreation();
         }).catch((err2) => {
           console.log(err2);
         });
       } else {
         console.log(err);
         props.showToast(err?.message ?? 'An error occurred');
-        //return Promise.resolve({});
       }
-    // }).then((awsUserResponse) => {
-    //   console.log(awsUserResponse);
-    //   props.setUserProfile.setAWSUserProfile(awsUserResponse.data);
-    //   props.setRedirectTo(redirectTo);
-    // }).catch((err2) => {
-    //   console.log(err2);
     });
 
   };

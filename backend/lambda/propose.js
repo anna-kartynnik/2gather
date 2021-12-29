@@ -29,7 +29,7 @@ class Slot {
     this.start = start;
     this.end = end;
     this.numberOfOverlaps = numberOfOverlaps;
-    // todo delete
+    // todo delete (for debugging?)
     this.startDate = new Date(start);
     this.endDate = new Date(end);
   }
@@ -80,9 +80,9 @@ function getDefaultBusySlots(preferredTimeStart, preferredTimeEnd, participantsT
   return busySlots;
 }
 
-function chooseFromIntervals(intervals, duration) {
+function chooseFromIntervals(intervals, duration, numberOfSlots) {
   // `intervals` should be sorted
-  // [TODO] improve, this is an initial version
+
   const slots = [];
   const durationMs = duration * 60 * 1000;
   for (let interval of intervals) {
@@ -97,22 +97,23 @@ function chooseFromIntervals(intervals, duration) {
     }
   }
 
-  //console.log('chosen slots');
-  //console.log(slots);
-
   slots.sort((a, b) => a.compareForChoice(b));
-
-  //console.log('chosen slots after sorting');
-  //console.log(slots);
 
   // Select 3 slots.
   // [TODO] how to select slots without intersection (as much as it's possible)?..
-
-  return slots.slice(0, DEFAULT_NUMBER_OF_SLOTS);
+  if (numberOfSlots !== -1) {
+    return slots.slice(0, numberOfSlots);
+  } else {
+    return slots;
+  }
 }
 
 function getProposedSlots(busySlots, preferredTimeStart, preferredTimeEnd, duration,
-                          participantsTimeZones) {
+                          participantsTimeZones, numberOfSlots) {
+  if (!numberOfSlots) {
+    numberOfSlots = DEFAULT_NUMBER_OF_SLOTS;
+  }
+
   // `busySlots` is an array of objects with 'start' and 'end' in UTC.
   // Here we have all busy slots for all the participants combined.
 
@@ -124,9 +125,6 @@ function getProposedSlots(busySlots, preferredTimeStart, preferredTimeEnd, durat
    
     participantsTimeZones
   ));
-
-  // console.log('all busy slots');
-  // console.log(allBusySlots);
 
   const startTimeMs = new Date(moment(preferredTimeStart).milliseconds(0).toISOString()).getTime(); // check UTC
   const endTimeMs = new Date(moment(preferredTimeEnd).milliseconds(0).toISOString()).getTime(); // check UTC
@@ -149,16 +147,10 @@ function getProposedSlots(busySlots, preferredTimeStart, preferredTimeEnd, durat
     timePoints.push(new TimePoint(end, false, busySlot));
   }
 
-  // console.log('all busy slots points');
-  // console.log(timePoints);
-
   // First sort the slots by the start time.
   timePoints.sort((a, b) => {
     return a.compare(b);
   });
-
-  // console.log('all busy slots points after sorting');
-  // console.log(timePoints);
 
   const intervals = [];
   let start = startTimeMs;
@@ -188,8 +180,6 @@ function getProposedSlots(busySlots, preferredTimeStart, preferredTimeEnd, durat
       numberOfOverlaps
     ));    
   }
-  // console.log('all intervals');
-  // console.log(intervals);
 
   // Merge intervals that "touch" each other and have identical number of overlaps.
   let mergedIntervals = [];
@@ -220,25 +210,17 @@ function getProposedSlots(busySlots, preferredTimeStart, preferredTimeEnd, durat
     }
   }
 
-  // console.log('all merged intervals');
-  // console.log(mergedIntervals);
-
   mergedIntervals.sort((a, b) => {
     return a.compare(b);
   });
 
-  // console.log('all intervals after sorting');
-  // console.log(mergedIntervals);
-
-  // Find 3 slots
-  const proposedSlots = chooseFromIntervals(mergedIntervals, duration);
+  // Find best slots sorted.
+  const proposedSlots = chooseFromIntervals(mergedIntervals, duration, numberOfSlots);
 
   console.log('proposed slots');
   console.log(proposedSlots);
-  
-  // [TODO] set final timezone!
 
-  return proposedSlots.map((slot) => moment(slot.start).utc().toISOString());
+  return proposedSlots;
   
 }
 

@@ -36,7 +36,7 @@ function Agenda(props) {
     setIsLoading(true);
     setListItems([]);
     const getFunc = isConfirmedOnly ? getConfirmedAgendaList : getAgendaList;
-    getFunc(userProfile.awsUserProfile.id, status).then((items) => {
+    getFunc(userProfile.awsUserProfile, status).then((items) => {
       console.log(items);
       setIsLoading(false);
       setListItems(items);
@@ -132,6 +132,10 @@ function Agenda(props) {
     setMeetingToReschedule(null);
   };
 
+  const handleRefresh = () => {
+    setRefresh(new Date().getTime());
+  }
+
   return (
     <>
       <PageActions
@@ -156,10 +160,12 @@ function Agenda(props) {
         isLoading={isLoading}
         listItems={listItems}
         showToast={props.showToast}
+        userProfile={props.userProfile}
         handleDelete={handleDelete}
         handleEdit={handleEdit}
         handleConfirm={handleConfirm}
         handleReschedule={handleReschedule}
+        handleRefresh={handleRefresh}
       />
       { showCreateDialog &&
         <CreateMeetingDialog
@@ -177,7 +183,7 @@ function Agenda(props) {
           onCloseAndRefresh={handleEditDialogCloseAndRefresh}
           showToast={props.showToast}
           meetingId={meetingToEdit.id}
-          //userProfile={props.userProfile}
+          userProfile={props.userProfile}
         />
       }
       { showConfirmDialog &&
@@ -187,7 +193,7 @@ function Agenda(props) {
           onCloseAndRefresh={handleConfirmDialogCloseAndRefresh}
           showToast={props.showToast}
           meeting={meetingToConfirm}
-          //userProfile={props.userProfile}
+          userProfile={props.userProfile}
         />
       }
       { showRescheduleDialog &&

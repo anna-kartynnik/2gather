@@ -22,6 +22,7 @@ function CreateMeetingDialog(props) {
   const [preferredTimeRange, setPreferredTimeRange] = useState([]);  // moment objects
   const [duration, setDuration] = useState(60);
   const [attachments, setAttachments] = useState([]);
+  const [createWithoutVotes, setCreateWithoutVotes] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [invalid, setInvalid] = useState({});
 
@@ -85,7 +86,8 @@ function CreateMeetingDialog(props) {
       preferredTimeEnd: preferredTimeRange[1].toISOString(),
       duration,
       creatorId: props.userProfile.awsUserProfile.id,
-      attachments: attachments
+      attachments: attachments,
+      schedulingMode: createWithoutVotes ? 'without-votes' : 'with-votes'
     }).then((resp) => {
       setIsLoading(false);
       props.showToast(
@@ -128,6 +130,15 @@ function CreateMeetingDialog(props) {
       });
     }
   };
+
+  const handleSchedulingModeChange = (evt) => {
+    console.log(evt.target);
+    if (evt.target.id === "mode-with-votes") {
+      setCreateWithoutVotes(false);
+    } else {
+      setCreateWithoutVotes(true);
+    }
+  }
 
   return (
     <Modal show={props.showDialog} onHide={props.onClose}
@@ -207,6 +218,24 @@ function CreateMeetingDialog(props) {
               type="file"
               name="file"
               onChange={handleFileChange}
+            />
+          </Form.Group>
+          <Form.Group controlId="scheduleMode" className="my-4">
+            <Form.Check
+              type="radio"
+              name="mode"
+              id="mode-with-votes"
+              label="Create this meeting automatically when all the participants have voted"
+              checked={!createWithoutVotes}
+              onChange={handleSchedulingModeChange}
+            />
+            <Form.Check
+              type="radio"
+              name="mode"
+              id="mode-without-votes"
+              label="Create this meeting automatically without waiting for the votes"
+              checked={createWithoutVotes}
+              onChange={handleSchedulingModeChange}
             />
           </Form.Group>
         </Form>

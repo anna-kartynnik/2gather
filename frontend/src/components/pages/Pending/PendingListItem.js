@@ -60,11 +60,11 @@ function PendingListItem(props) {
             handleReschedule={props.handleReschedule}
           />
         }
-        { props.item.creator_id !== props.currentUserId &&
+        { /*props.item.creator_id !== props.currentUserId &&
           <MeetingListItemParticipantActions
             item={props.item}
           />
-        }
+        */}
       </Col>
     </Row>
   );

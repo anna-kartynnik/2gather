@@ -167,7 +167,7 @@ function Pending(props) {
           onCloseAndRefresh={handleEditDialogCloseAndRefresh}
           showToast={props.showToast}
           meetingId={meetingToEdit.id}
-          //userProfile={props.userProfile}
+          userProfile={props.userProfile}
         />
       }
       { showConfirmDialog &&
@@ -177,7 +177,7 @@ function Pending(props) {
           onCloseAndRefresh={handleConfirmDialogCloseAndRefresh}
           showToast={props.showToast}
           meeting={meetingToConfirm}
-          //userProfile={props.userProfile}
+          userProfile={props.userProfile}
         />
       }
       { showRescheduleDialog &&

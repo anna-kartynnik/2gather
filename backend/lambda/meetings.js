@@ -14,6 +14,12 @@ class MeetingStatus {
   static CREATED = 'created';
   static PROPOSED = 'proposed';
   static CONFIRMED = 'confirmed';
+  static DELETED = 'deleted';
+}
+
+class MeetingSchedulingMode {
+  static WITH_VOTES = 'with-votes';
+  static WITHOUT_VOTES = 'without-votes';
 }
 
 
@@ -24,15 +30,16 @@ async function createMeeting(meeting, oldMeeting) {
   await client.query('BEGIN');
   try {
     const meetingInsertResult = await client.query(
-      `INSERT INTO ${MEETINGS_TABLE} (name, description, preferred_time_start, preferred_time_end, duration, creator_id)
-       VALUES ($1, $2, $3, $4, $5, $6) RETURNING id;`,
+      `INSERT INTO ${MEETINGS_TABLE} (name, description, preferred_time_start, preferred_time_end, duration, creator_id, scheduling_mode)
+       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id;`,
       [
         meeting.name,
         meeting.description || '',
         meeting.preferred_time_start,
         meeting.preferred_time_end,
         meeting.duration,
-        meeting.creator_id
+        meeting.creator_id,
+        meeting.scheduling_mode
       ]
     );
     meetingId = meetingInsertResult.rows.length === 1 ? meetingInsertResult.rows[0].id : null;
@@ -79,7 +86,7 @@ async function createMeeting(meeting, oldMeeting) {
     }
 
     if (oldMeeting && oldMeeting.id) {
-      await client.query(`UPDATE ${MEETINGS_TABLE} SET status = 'deleted' WHERE id = $1;`, [oldMeeting.id]);
+      await client.query(`UPDATE ${MEETINGS_TABLE} SET status = '${MeetingStatus.DELETED}' WHERE id = $1;`, [oldMeeting.id]);
     }
 
     await client.query('COMMIT');
@@ -101,21 +108,23 @@ async function updateMeeting(meeting) {
     console.log(`Could not get participants for meeting with id ${meeting.id}`, err);
     throw err;
   });
-  const oldParticipantsSet = new Set(oldParticipants.map((p) => p.id));
+  const oldParticipantsSet = new Set(oldParticipants.map((p) => p.id || (!p.id && `email:${p.email}`)));
   const newParticipantsSet = new Set(meeting.participants);
   const participantsToAdd = [];
   const participantsToDelete = [];
-  // [TODO] handle users without id but with email!
+
   for (let newParticipant of meeting.participants) {
     if (!oldParticipantsSet.has(newParticipant)) {
       participantsToAdd.push(newParticipant);
     }
   }
   for (let oldParticipant of oldParticipants) {
-    if (!newParticipantsSet.has(oldParticipant.id)) {
-      participantsToDelete.push(oldParticipant.id);
+    const value = oldParticipant.id ? oldParticipant.id : `email:${oldParticipant.email}`;
+    if (!newParticipantsSet.has(value)) {
+      participantsToDelete.push(value);
     }
   }
+
   const queries = [];
   queries.push(new common.Query(
     `UPDATE ${MEETINGS_TABLE} 
@@ -126,18 +135,34 @@ async function updateMeeting(meeting) {
      WHERE id = $1;`,
     [meeting.id, meeting.name, meeting.description, meeting.status, meeting.confirmed_time]
   ));
+
   for (let participantId of participantsToAdd) {
-    queries.push(new common.Query(
-      `INSERT INTO ${MEETING_PARTICIPANTS_TABLE} (meeting_id, user_id)
-       VALUES ($1, $2);`,
-      [meeting.id, participantId]
-    ));
+    if (participantId.startsWith('email')) {
+      queries.push(new common.Query(
+        `INSERT INTO ${MEETING_PARTICIPANTS_TABLE} (meeting_id, user_id, user_email)
+         VALUES ($1, (SELECT id FROM ${USERS_TABLE} WHERE email = $2), $2);`,
+        [meeting.id, participantId.split(':')[1]]
+      ));
+    } else {
+      queries.push(new common.Query(
+        `INSERT INTO ${MEETING_PARTICIPANTS_TABLE} (meeting_id, user_id, user_email)
+         VALUES ($1, $2, NULL);`,
+        [meeting.id, participantId]
+      ));
+    }
   }
   for (let participantId of participantsToDelete) {
-    queries.push(new common.Query(
-      `DELETE FROM ${MEETING_PARTICIPANTS_TABLE} WHERE meeting_id = $1 AND user_id = $2;`,
-      [meeting.id, participantId]
-    ));
+    if (participantId.startsWith('email')) {
+      queries.push(new common.Query(
+        `DELETE FROM ${MEETING_PARTICIPANTS_TABLE} WHERE meeting_id = $1 AND user_email = $2;`,
+        [meeting.id, participantId.split(':')[1]]
+      ));
+    } else {
+      queries.push(new common.Query(
+        `DELETE FROM ${MEETING_PARTICIPANTS_TABLE} WHERE meeting_id = $1 AND user_id = $2;`,
+        [meeting.id, participantId]
+      ));
+    }
   }
 
   const client = await common.getClient();
@@ -169,42 +194,10 @@ async function deleteMeeting(meetingId) {
   return result;
 }
 
-
-
-
-// (SELECT m.*, mpt.id AS meeting_proposed_time_id, mpt.proposed_time AS proposed_time,
-// COUNT(mptv.id) AS number_of_votes,
-// (SELECT mptv2.id FROM meeting_proposed_time_votes mptv2 WHERE mptv2.user_id = 'dd3f4560-9a5b-39d0-b0c0-ba55f07de8e3' AND mptv2.proposed_time_id = mpt.id) AS abc
-// FROM meetings m INNER JOIN meeting_participants mp ON mp.meeting_id = m.id 
-// LEFT OUTER JOIN meeting_proposed_times mpt ON mpt.meeting_id = m.id
-// LEFT OUTER JOIN meeting_proposed_time_votes mptv ON mptv.proposed_time_id = mpt.id
-// WHERE mp.user_id = 'dd3f4560-9a5b-39d0-b0c0-ba55f07de8e3' AND m.status = 'proposed'
-// AND m.preferred_time_start > NOW()
-// GROUP BY m.id, mpt.id ORDER BY mpt.proposed_time NULLS FIRST)
-// UNION
-// (SELECT m.*, NULL AS meeting_proposed_time_id, NULL AS proposed_time,
-// 0 AS number_of_votes,
-// NULL AS abc
-// FROM meetings m INNER JOIN meeting_participants mp ON mp.meeting_id = m.id 
-// WHERE mp.user_id = 'dd3f4560-9a5b-39d0-b0c0-ba55f07de8e3' AND m.status = 'confirmed'
-// AND m.preferred_time_start > NOW()
-// ORDER BY m.confirmed_time);
-
 async function getMeetingsByParticipant(userId, status) {
   let queryText = '';
   let addPar = false;
   let queryValues = [userId];
-  // queryText += `SELECT m.* FROM ${MEETINGS_TABLE} m INNER JOIN ${MEETING_PARTICIPANTS_TABLE} mp ` +
-  //     `ON m.id = mp.meeting_id ` +
-  //     `WHERE mp.user_id = $1`;
-
-  // if (status) {
-  //   queryText += ` AND m.status = $2`;
-  //   queryValues.push(status);
-  // }
-
-  // queryText += ` AND m.preferred_time_start > NOW();`;
-
 
   if (!status || status === MeetingStatus.PROPOSED) {
     queryText += `SELECT m.*, mpt.id AS meeting_proposed_time_id, mpt.proposed_time AS proposed_time, ` +
@@ -232,10 +225,6 @@ async function getMeetingsByParticipant(userId, status) {
     } else if (status === MeetingStatus.CREATED) {
       queryText += `AND m.status = '${MeetingStatus.CREATED}' AND m.preferred_time_start > NOW() ` +
         `ORDER BY m.preferred_time_start`;
-    // } else {
-    //   queryText += `AND m.status != '${MeetingStatus.PROPOSED}' AND m.preferred_time_start > NOW() ` +
-    //     `ORDER BY m.preferred_time_start)`;
-    // }
     }
   }
   if (addPar) {
@@ -250,14 +239,12 @@ async function getMeetingsByParticipant(userId, status) {
 }
 
 async function getProposedTimes(userId, ids) {
-  console.log(ids);
   const params = [];
   for(let i = 2; i <= ids.length + 1; i++) {
     params.push('$' + i);
   }
   const queryValues = [userId];
   queryValues.push(...ids);
-  console.log(params);
   const result = await common.makeQuery(new common.Query(
     `SELECT mpt.meeting_id, mpt.id AS meeting_proposed_time_id, mpt.proposed_time AS proposed_time, ` +
       `COUNT(mptv.id) AS number_of_votes, ` +
@@ -268,6 +255,19 @@ async function getProposedTimes(userId, ids) {
       `WHERE mpt.meeting_id IN (${params.join(',')}) ` +
       `GROUP BY mpt.id ORDER BY mpt.proposed_time;`,
     queryValues
+  ));
+  return result.rows; 
+}
+
+async function getProposedTimesForMeeting(meetingId) {
+  const result = await common.makeQuery(new common.Query(
+    `SELECT mpt.meeting_id, mpt.id AS meeting_proposed_time_id, mpt.proposed_time AS proposed_time, ` +
+      `COUNT(mptv.id) AS number_of_votes ` +
+      `FROM ${MEETING_PROPOSED_TIMES_TABLE} mpt LEFT OUTER JOIN ${MEETING_PROPOSED_TIME_VOTES_TABLE} mptv ` +
+      `ON mpt.id = mptv.proposed_time_id ` +
+      `WHERE mpt.meeting_id = $1 ` +
+      `GROUP BY mpt.id ORDER BY mpt.proposed_time;`,
+    [meetingId]
   ));
   return result.rows; 
 }
@@ -316,6 +316,14 @@ async function getMeetingParticipantsWithoutId(meetingId) {
   return result.rows;
 }
 
+async function getMeetingParticipantsWithId(meetingId) {
+  const result = await common.makeQuery(new common.Query(
+    `SELECT mp.* FROM ${MEETING_PARTICIPANTS_TABLE} mp WHERE mp.meeting_id = $1 AND mp.user_id IS NOT NULL;`,
+     [meetingId]
+  ));
+  return result.rows;
+}
+
 async function getMeetingParticipantsWithCalendars(id) {
   const result = await common.makeQuery(new common.Query(
     `SELECT u.*, uc.* FROM ${MEETINGS_TABLE} m INNER JOIN ${MEETING_PARTICIPANTS_TABLE} mp ON m.id = mp.meeting_id
@@ -328,14 +336,12 @@ async function getMeetingParticipantsWithCalendars(id) {
 }
 
 async function getParticipantsBusySlots(userIds) {
-  console.log(userIds);
   const params = [];
   for(let i = 1; i <= userIds.length; i++) {
     params.push('$' + i);
   }
   const queryValues = [];
   queryValues.push(...userIds);
-  console.log(params);
 
   const result = await common.makeQuery(new common.Query(
     `SELECT m.confirmed_time, m.duration FROM ${MEETINGS_TABLE} m INNER JOIN ${MEETING_PARTICIPANTS_TABLE} mp 
@@ -345,7 +351,16 @@ async function getParticipantsBusySlots(userIds) {
   return result.rows;
 }
 
-async function saveMeetingTimeSuggestion(meetingId, slots) {
+async function getMeetingVotes(meetingId) {
+  const result = await common.makeQuery(new common.Query(
+    `SELECT MAX(mptv.created) AS last_vote_time FROM ${MEETING_PROPOSED_TIME_VOTES_TABLE} mptv INNER JOIN ${MEETING_PROPOSED_TIMES_TABLE} mpt
+      ON mptv.proposed_time_id = mpt.id WHERE mpt.meeting_id = $1 GROUP BY mptv.user_id;`,
+    [meetingId]
+  ));
+  return result.rows; 
+}
+
+async function saveMeetingTimeSuggestions(meeting, slots) {
   if (slots.length === 0) {
     return;
   }
@@ -353,14 +368,25 @@ async function saveMeetingTimeSuggestion(meetingId, slots) {
   for (let slot of slots) {
     queries.push(new common.Query(
       `INSERT INTO ${MEETING_PROPOSED_TIMES_TABLE} (meeting_id, proposed_time) VALUES ($1, $2);`,
-      [meetingId, slot]
+      [meeting.id, slot]
     ));
   }
+  let updateMeetingQuery = '';
+  let updateMeetingValues = [meeting.id];
+  if (meeting.scheduling_mode === MeetingSchedulingMode.WITHOUT_VOTES) {
+    updateMeetingQuery = `UPDATE ${MEETINGS_TABLE}
+      SET status = '${MeetingStatus.CONFIRMED}',
+          confirmed_time = $2
+      WHERE id = $1;`
+    updateMeetingValues.push(slots[0]);
+  } else {
+    updateMeetingQuery = `UPDATE ${MEETINGS_TABLE}
+      SET status = '${MeetingStatus.PROPOSED}'
+      WHERE id = $1;`
+  }
   queries.push(new common.Query(
-    `UPDATE ${MEETINGS_TABLE}
-       SET status = '${MeetingStatus.PROPOSED}'
-       WHERE id = $1;`,
-    [meetingId]
+    updateMeetingQuery,
+    updateMeetingValues
   ));
   let result = null;
   const client = await common.getClient();
@@ -473,18 +499,8 @@ async function rescheduleMeeting(id, params) {
 }
 
 
-
-// async function getMeetingsCalendars(ids) {
-//   const result = await common.makeQuery(new common.Query(
-//     `SELECT DISTINCT uc.* FROM ${MEETINGS_TABLE} m INNER JOIN ${MEETING_PARTICIPANTS_TABLE} mp ON m.id = mp.meeting_id
-//        INNER JOIN ${USER_CALENDARS_TABLE} uc ON mp.user_id = uc.user_id WHERE m.id = ANY($1::UUID[]);`,
-//      [ids]
-//   ));
-//   return result.rows;
-// }
-
-
 exports.MeetingStatus = MeetingStatus;
+exports.MeetingSchedulingMode = MeetingSchedulingMode;
 exports.createMeeting = createMeeting;
 exports.updateMeeting = updateMeeting;
 exports.confirmMeeting = confirmMeeting;
@@ -495,8 +511,9 @@ exports.getMeetingById = getMeetingById;
 exports.getMeetingAttachments = getMeetingAttachments;
 exports.getMeetingParticipants = getMeetingParticipants;
 exports.getMeetingParticipantsWithoutId = getMeetingParticipantsWithoutId;
+exports.getMeetingParticipantsWithId = getMeetingParticipantsWithId;
 exports.getMeetingParticipantsWithCalendars = getMeetingParticipantsWithCalendars;
-exports.saveMeetingTimeSuggestion = saveMeetingTimeSuggestion;
+exports.saveMeetingTimeSuggestions = saveMeetingTimeSuggestions;
 exports.createMeetingVote = createMeetingVote;
 exports.deleteMeetingVote = deleteMeetingVote;
 exports.getProposedTimes = getProposedTimes;
@@ -508,3 +525,5 @@ exports.deleteQuestion = deleteQuestion;
 exports.createQuestionVote = createQuestionVote;
 exports.deleteQuestionVote = deleteQuestionVote;
 exports.rescheduleMeeting = rescheduleMeeting;
+exports.getMeetingVotes = getMeetingVotes;
+exports.getProposedTimesForMeeting = getProposedTimesForMeeting;

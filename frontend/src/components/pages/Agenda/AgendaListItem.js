@@ -49,6 +49,8 @@ function AgendaListItem(props) {
         { !props.item.is_creator &&
           <MeetingListItemParticipantActions
             item={props.item}
+            currentUserId={props.userProfile.awsUserProfile.id}
+            handleRefresh={props.handleRefresh}
           />
         }
       </Col>

@@ -67,7 +67,6 @@ function App(props) {
       userProfile={userProfile}
       deleteUserProfile={deleteUserProfile}>
       <div className="page-content">
-
         <Switch>
           <Route path="/" exact>
             <Agenda
@@ -115,6 +114,7 @@ function App(props) {
         
         </Switch>
       </div>
+      <div className="pb-3"></div>
       <CalendarsDialog
         userProfile={userProfile}
         showToast={showToast}

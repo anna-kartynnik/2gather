@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import './PageLayout.scss';
 
@@ -9,13 +9,16 @@ import Logo from './../Logo/Logo';
 import LogoutAction from './../LogoutAction/LogoutAction';
 import { Link } from 'react-router-dom';
 
+import Notifications from './../Notifications/Notifications';
+
 import notif from './../../images/notification.svg';
 
 
 function PageLayout(props) {
+  const [refresh, setRefresh] = useState(null);
 
   return (
-    <Container className="page-layout my-3"> {/* vh-100 d-flex flex-column'>*/}
+    <Container className="page-layout my-3">
       <Row className='header gy-5'>
         <Stack direction='horizontal' gap={3}>
           <Logo />
@@ -28,7 +31,13 @@ function PageLayout(props) {
               </Link>
             }
           </div>
-          <div><img src={notif} alt='notifications' /></div>
+          {/*<div><img src={notif} alt='notifications' /></div>*/}
+          { props.userProfile && props.userProfile.awsUserProfile &&
+            <Notifications
+              userProfile={props.userProfile}
+              refresh={refresh}
+            />
+          }
           <div>
             <LogoutAction
               setToken={props.setToken}
@@ -37,8 +46,7 @@ function PageLayout(props) {
           </div>
         </Stack>
       </Row>
-      {/*<Row className='page-content'> {/* vh-100'> */}
-        { props.children }
+      { props.children }
       {/*</Row>
 {/*      <Row className='footer'>
         Footer

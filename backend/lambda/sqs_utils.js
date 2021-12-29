@@ -13,37 +13,20 @@ const DEFAULT_NUMBER_OF_MESSAGES = 5;
 // Create an SQS service object
 const sqs = new AWS.SQS(config);
 
-function sendMessage(meeting/*, calendars*/) {
+function sendMessage(meeting, queueUrl) {
+  if (!queueUrl) {
+    queueUrl = QUEUE_URL;
+  }
   const params = {
     DelaySeconds: 10,
     MessageAttributes: {
       meetingId: {
         DataType: 'String',
         StringValue: meeting.id
-      }//,
-      // participants: {
-      //   DataType: 'String',
-      //   StringValue: meeting.participants.join(',')
-      // },
-      // preferredTimeStart: {
-      //   DataType: 'String',
-      //   StringValue: meeting.preferred_time_start
-      // },
-      // preferredTimeEnd: {
-      //   DataType: 'String',
-      //   StringValue: meeting.preferred_time_end
-      // },
-      // duration: {
-      //   DataType: 'String',
-      //   StringValue: '' + meeting.duration
-      // },
-      // calendars: {
-      //   DataType: 'String',
-      //   StringValue: calendars.join(',')
-      // }
+      }
     },
     MessageBody: 'empty',
-    QueueUrl: QUEUE_URL
+    QueueUrl: queueUrl
   };
     
   return sqs.sendMessage(params).promise();

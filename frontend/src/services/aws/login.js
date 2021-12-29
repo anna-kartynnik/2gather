@@ -55,7 +55,10 @@ export function loginToAWS(googleAuthResponse) {
 }
 
 export function refreshAWSToken(newGoogleToken) {
-  AWS.config.credentials.params.Logins[AWS_COGNITO_GOOGLE_LOGIN_PARAM] = newGoogleToken;
+  if (AWS.config.credentials) {
+    AWS.config.credentials.params.Logins[AWS_COGNITO_GOOGLE_LOGIN_PARAM] = newGoogleToken;
+    AWS.config.credentials.refresh();
+  }
 }
 
 // const awsAPIGatewaySDK = window.apigClientFactory.newClient({});

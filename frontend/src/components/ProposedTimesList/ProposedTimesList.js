@@ -25,15 +25,20 @@ function ProposedTimesList(props) {
   return (
     <Stack direction="horizontal" gap={2} className="proposed-times-list">
       { props.showLabel && <span>Vote for time:</span> }
-      { props.item.proposed_times.map((pt) =>
-        <ProposedTimeBadge
-          key={pt.meeting_proposed_time_id}
-          item={pt}
-          currentUserId={props.currentUserId}
-          showToast={props.showToast}
-          handleRefresh={props.handleRefresh}
-        />
-      )}
+      { props.item.proposed_times.map((pt) => {
+          if (!pt.duration) {
+            pt.duration = props.item.duration;
+          }
+          return (
+            <ProposedTimeBadge
+              key={pt.meeting_proposed_time_id}
+              item={pt}
+              currentUserId={props.currentUserId}
+              showToast={props.showToast}
+              handleRefresh={props.handleRefresh}
+            />
+          );
+      })}
     </Stack>
   );
 }

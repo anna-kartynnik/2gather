@@ -27,7 +27,7 @@ function EditMeetingDialog(props) {
   const { meetingId, showToast } = props;
 
   useEffect(() => {
-    getMeetingById(meetingId).then((resp) => {
+    getMeetingById(meetingId, props.userProfile.awsUserProfile.id).then((resp) => {
       console.log(resp);
       const meeting = resp.data;
       setName(meeting.name);
@@ -39,7 +39,7 @@ function EditMeetingDialog(props) {
       console.log(err);
       setIsLoading(false);
       showToast(
-        err?.message ?? 'An error occurred',
+        err ?? 'An error occurred',
         'danger',
         //'middle-center'
       );
@@ -160,9 +160,9 @@ function EditMeetingDialog(props) {
           <Form.Label>Preferred time range and duration</Form.Label>
           <div>
             <i>
-              { moment(savedMeeting.preferred_time_start).format('ddd, MMM Do') }
+              { moment(savedMeeting.preferred_time_start).format('ddd, MMM Do h:mma') }
               &nbsp;-&nbsp;
-              { moment(savedMeeting.preferred_time_end).format('ddd, MMM Do') }&nbsp;&nbsp;&nbsp;
+              { moment(savedMeeting.preferred_time_end).format('ddd, MMM Do h:mma') }&nbsp;&nbsp;&nbsp;
               ({savedMeeting.duration} min)
             </i>
           </div>

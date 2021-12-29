@@ -82,9 +82,9 @@ function getTimeForSort(meeting) {
   return time;
 }
 
-export function getAgendaList(userId, status) {
+export function getAgendaList(user, status) {
   const params = {
-    user_id: userId
+    user_id: user.id
   };
   if (status) {
     params.status = status;
@@ -99,7 +99,7 @@ export function getAgendaList(userId, status) {
         meetingsMap[meeting.id].push(meeting);
       }
       const meetings = resp.data.map((meeting) => {
-        const m = expandMeeting(meeting, userId, meetingsMap);
+        const m = expandMeeting(meeting, user.id, meetingsMap);
         m.proposed_times = meetingsMap[meeting.id];
         return m;
       });
@@ -135,7 +135,8 @@ export async function createMeeting(meeting) {
       preferred_time_start: meeting.preferredTimeStart,
       preferred_time_end: meeting.preferredTimeEnd,
       duration: meeting.duration,
-      attachments: meeting.attachments
+      attachments: meeting.attachments,
+      scheduling_mode: meeting.schedulingMode
     });
   });
 }
@@ -167,8 +168,8 @@ export function confirmMeeting(meeting) {
 }
 
 
-export function getConfirmedAgendaList(userId) {
-  return getAgendaList(userId, MeetingStatus.CONFIRMED);
+export function getConfirmedAgendaList(user) {
+  return getAgendaList(user, MeetingStatus.CONFIRMED);
 }
 
 export function getPendingAgendaList(userId) {

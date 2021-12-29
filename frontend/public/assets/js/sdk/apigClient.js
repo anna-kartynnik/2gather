@@ -523,6 +523,44 @@ apigClientFactory.newClient = function (config) {
         
         return apiGatewayClient.makeRequest(uploadPutRequest, authType, additionalParams, config.apiKey);
     };
+
+    apigClient.notificationsGet = function (params, body, additionalParams) {
+        if(additionalParams === undefined) { additionalParams = {}; }
+
+        let paramsToQS = ['user_id'];
+        
+        apiGateway.core.utils.assertParametersDefined(params, paramsToQS, ['body']);
+        
+        var notificationsGetRequest = {
+            verb: 'get'.toUpperCase(),
+            path: pathComponent + uritemplate('/notifications').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
+            headers: apiGateway.core.utils.parseParametersToObject(params, []),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, paramsToQS),
+            body: body
+        };
+        
+        
+        return apiGatewayClient.makeRequest(notificationsGetRequest, authType, additionalParams, config.apiKey);
+    };
+
+    apigClient.notificationsPut = function (params, body, additionalParams) {
+        if(additionalParams === undefined) { additionalParams = {}; }
+
+        console.log(params);
+        
+        apiGateway.core.utils.assertParametersDefined(params, [], ['body']);
+        
+        var notificationsPutRequest = {
+            verb: 'put'.toUpperCase(),
+            path: pathComponent + uritemplate('/notifications').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
+            headers: apiGateway.core.utils.parseParametersToObject(params, []),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
+            body: body
+        };
+        
+        
+        return apiGatewayClient.makeRequest(notificationsPutRequest, authType, additionalParams, config.apiKey);
+    };
     
 
     return apigClient;

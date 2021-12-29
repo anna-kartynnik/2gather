@@ -19,10 +19,7 @@ function ConfirmMeetingTimeDialog(props) {
   const [selectedTime, setSelectedTime] = useState(null);
   const [validationError, setValidationError] = useState(null);
 
-  console.log(props.meeting);
-
   const handleSelectedTimeChange = (evt) => {
-    console.log(evt.target);
     setSelectedTime(evt.target.value);
   };
 
